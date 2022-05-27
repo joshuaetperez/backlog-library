@@ -1,6 +1,8 @@
+import {Link} from 'react-router-dom';
+
 function App() {
   return (
-    <div className="container-fluid bg-light py-3 d-flex flex-grow-1 align-center-self justify-content-center">
+    <div className="container-fluid bg-light py-3 d-flex flex-grow-1 justify-content-center">
       <div className="card container my-3 px-0 bg-info bg-gradient rounded-4 card-height">
         <div className="card-body text-center">
           <h5 className="card-title my-3 fs-2">Your Personal Backlog</h5>
@@ -26,9 +28,11 @@ function App() {
             </div>
           </div>
         </div>
-        <button type="button" class="btn btn-primary rounded-4">
-          Make an account!
-        </button>
+        <Link to="/signup">
+          <button type="button" class="btn btn-primary rounded-4 w-100">
+            Make an account!
+          </button>
+        </Link>
       </div>
     </div>
   );

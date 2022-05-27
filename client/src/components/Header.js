@@ -1,17 +1,23 @@
+import {Link} from 'react-router-dom';
+
 function Header() {
   return (
     <div className="navbar bg-info flex-nowrap">
       <div className="container">
-        <a className="navbar-brand fs-3 text-wrap bold" href="/">
+        <Link to="/" className="navbar-brand fs-3 text-wrap bold">
           Backlog Library
-        </a>
+        </Link>
         <div className="d-flex gap-2 justify-content-center text-nowrap">
-          <button type="button" class="btn btn-secondary">
-            Log In
-          </button>
-          <button type="button" class="btn btn-primary">
-            Sign Up
-          </button>
+          <Link to="/login">
+            <button type="button" class="btn btn-secondary">
+              Login
+            </button>
+          </Link>
+          <Link to="/signup">
+            <button type="button" class="btn btn-primary">
+              Sign Up
+            </button>
+          </Link>
         </div>
       </div>
     </div>
