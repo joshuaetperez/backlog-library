@@ -16,8 +16,14 @@ body,
   font-weight: 700;
 }
 
-.small-text {
-  font-size: 0.85rem;
+#email-exists-error,
+#username-exists-error,
+#username-length-error,
+#password-length-error,
+#confirm-password-length-error,
+#confirm-password-no-match-error {
+  display: flex;
+  color: #ff0000;
 }
 
 @media (min-width: 576px) {

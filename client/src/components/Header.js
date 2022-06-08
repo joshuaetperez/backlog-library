@@ -9,12 +9,12 @@ function Header() {
         </Link>
         <div className="d-flex gap-2 justify-content-center text-nowrap">
           <Link to="/login">
-            <button type="button" class="btn btn-secondary">
+            <button type="button" className="btn btn-secondary">
               Login
             </button>
           </Link>
           <Link to="/signup">
-            <button type="button" class="btn btn-primary">
+            <button type="button" className="btn btn-primary">
               Sign Up
             </button>
           </Link>

@@ -13,23 +13,23 @@ function App() {
             Backlog Library can be used to keep track of the following
             categories:
           </p>
-          <div class="container d-grid gap-3 fs-4 bold-m">
-            <div class="row">
-              <div class="col-sm">Movies</div>
-              <div class="col-sm">TV Shows</div>
+          <div className="container d-grid gap-3 fs-4 bold-m">
+            <div className="row">
+              <div className="col-sm">Movies</div>
+              <div className="col-sm">TV Shows</div>
             </div>
-            <div class="row">
-              <div class="col-sm">Anime</div>
-              <div class="col-sm">Manga</div>
+            <div className="row">
+              <div className="col-sm">Anime</div>
+              <div className="col-sm">Manga</div>
             </div>
-            <div class="row">
-              <div class="col-sm">Video Games</div>
-              <div class="col-sm">Books</div>
+            <div className="row">
+              <div className="col-sm">Video Games</div>
+              <div className="col-sm">Books</div>
             </div>
           </div>
         </div>
         <Link to="/signup">
-          <button type="button" class="btn btn-primary rounded-4 w-100">
+          <button type="button" className="btn btn-primary rounded-4 w-100">
             Make an account!
           </button>
         </Link>
