@@ -92,7 +92,7 @@ function Signup() {
         }
         setErrorObj(errorState);
       } else {
-        // TODO: REDIRECT TO USER'S HOMEPAGE
+        window.location = '/home';
       }
     } catch (err) {
       console.error(err.message);
