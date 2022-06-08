@@ -1,7 +1,6 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const bcrpyt = require('bcrypt');
 const passport = require('passport');
 const initializePassport = require('./passport-config');
 const flash = require('express-flash');
