@@ -41,11 +41,11 @@ const registerSchema = [
 // Returns true if the given username already exists, false otherwise
 async function isUsernameInUse(username) {
   try {
-    const res = await pool.query(
+    const response = await pool.query(
       'SELECT COUNT(*) AS total FROM users WHERE username = $1',
       [username]
     );
-    if (res.rows[0].total === '0') {
+    if (response.rows[0].total === '0') {
       return false;
     }
     return true;
@@ -57,11 +57,11 @@ async function isUsernameInUse(username) {
 // Returns true if the given email already exists, false otherwise
 async function isEmailInUse(email) {
   try {
-    const res = await pool.query(
+    const response = await pool.query(
       'SELECT COUNT(*) AS total FROM users WHERE email = $1',
       [email]
     );
-    if (res.rows[0].total === '0') {
+    if (response.rows[0].total === '0') {
       return false;
     }
     return true;

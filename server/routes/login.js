@@ -1,17 +1,30 @@
 const express = require('express');
-const {check} = require('express-validator');
 const passport = require('passport');
 const {checkAuthenticated} = require('../middlewares/check-authentication');
 
 const loginRouter = express.Router();
 
-loginRouter.post(
-  '/login',
-  passport.authenticate('local', {
-    successRedirect: 'http://localhost:3000/',
-    failureRedirect: 'http://localhost:3000/login',
-    failureFlash: true,
-  })
-);
+loginRouter.post('/login', (req, res) => {
+  passport.authenticate('local', (err, user) => {
+    if (err) throw err;
+    if (!user) res.send('No user exists');
+    else {
+      req.logIn(user, (err) => {
+        if (err) throw err;
+        res.send('Logged in sucessfully!');
+      });
+    }
+  })(req, res);
+});
+
+// Logs out user and redirects user to login page
+loginRouter.delete('/logout', (req, res) => {
+  req.logOut(function (err) {
+    if (err) {
+      return next(err);
+    }
+    res.send('Logged out successfully!');
+  });
+});
 
 module.exports = loginRouter;

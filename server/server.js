@@ -15,7 +15,7 @@ const signupRouter = require('./routes/signup');
 
 initializePassport(passport);
 
-app.use(cors());
+app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(flash());
@@ -31,7 +31,9 @@ app.use(passport.session());
 
 app.use(loginRouter);
 app.use(signupRouter);
-
+app.get('/user', (req, res) => {
+  res.send(req.user);
+});
 const port = 5000;
 app.listen(port, () => {
   console.log(`Server is listening at port ${port}`);

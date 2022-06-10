@@ -7,14 +7,22 @@ function Login() {
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
+
     try {
       const body = {email, password};
-      const response = await fetch('http://localhost:5000/login', {
+      await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
+        credentials: 'include',
       });
-      console.log(response);
+
+      // Check if user is stored in session
+      const response = await fetch('http://localhost:5000/user', {
+        credentials: 'include',
+      });
+      const jsonData = await response.json();
+      console.log(jsonData);
     } catch (err) {
       console.error(err.message);
     }
