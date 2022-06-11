@@ -4,17 +4,8 @@ const {checkAuthenticated} = require('../middlewares/check-authentication');
 
 const loginRouter = express.Router();
 
-loginRouter.post('/login', (req, res) => {
-  passport.authenticate('local', (err, user) => {
-    if (err) throw err;
-    if (!user) res.send('No user exists');
-    else {
-      req.logIn(user, (err) => {
-        if (err) throw err;
-        res.send('Logged in sucessfully!');
-      });
-    }
-  })(req, res);
+loginRouter.post('/login', passport.authenticate('local'), (req, res) => {
+  res.send('Logged in successfully!');
 });
 
 // Logs out user and redirects user to login page
