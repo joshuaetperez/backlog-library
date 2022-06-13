@@ -1,22 +1,48 @@
-import {BrowserRouter, Routes, Route} from 'react-router-dom';
-import App from './App';
+import {useContext} from 'react';
+import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
+import {myContext} from './components/Context';
+import Welcome from './components/Welcome';
+import UserHome from './components/UserHome';
 import Header from './components/Header';
 import Footer from './components/Footer';
-import Home from './components/Home';
 import Login from './components/Login';
 import Signup from './components/Signup';
 import './style.css';
 
 const RouteSwitch = () => {
+  const isUserLoggedIn = useContext(myContext);
+
+  // isUserLoggedIn is only undefined before context is updated with fetched user data
+  // In this case, display just the header (without buttons) and the footer while waiting for isUserLoggedIn to be filled with a value
+  if (isUserLoggedIn === undefined) {
+    return (
+      <div className="container-fluid d-flex flex-column min-vh-100 p-0">
+        <BrowserRouter>
+          <Header />
+          <div className="container-fluid bg-light d-flex flex-grow-1"></div>
+          <Footer />
+        </BrowserRouter>
+      </div>
+    );
+  }
   return (
     <div className="container-fluid d-flex flex-column min-vh-100 p-0">
       <BrowserRouter>
         <Header />
         <Routes>
-          <Route path="/" element={<App />} />
-          <Route path="/home" element={<Home />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          {isUserLoggedIn ? (
+            <>
+              <Route path="/" element={<UserHome />} />
+              <Route path="/login" element={<Navigate to="/" />} />
+              <Route path="/signup" element={<Navigate to="/" />} />
+            </>
+          ) : (
+            <>
+              <Route path="/" element={<Welcome />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/signup" element={<Signup />} />
+            </>
+          )}
         </Routes>
         <Footer />
       </BrowserRouter>

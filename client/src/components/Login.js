@@ -18,11 +18,12 @@ function Login() {
       });
 
       // Check if user is stored in session
-      const response = await fetch('http://localhost:5000/user', {
+      await fetch('http://localhost:5000/user', {
         credentials: 'include',
       });
-      const jsonData = await response.json();
-      console.log(jsonData);
+
+      // Redirect to Homepage
+      window.location = '/';
     } catch (err) {
       console.error(err.message);
     }

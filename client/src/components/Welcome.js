@@ -1,6 +1,6 @@
 import {Link} from 'react-router-dom';
 
-function App() {
+function Welcome() {
   return (
     <div className="container-fluid bg-light py-3 d-flex flex-grow-1 justify-content-center">
       <div className="card container my-3 px-0 bg-info bg-gradient rounded-4 card-height">
@@ -38,4 +38,4 @@ function App() {
   );
 }
 
-export default App;
+export default Welcome;

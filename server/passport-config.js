@@ -28,7 +28,8 @@ function initialize(passport) {
   });
   passport.deserializeUser(async (user_id, done) => {
     const user = await getUserByID(user_id);
-    done(null, user);
+    const userObj = {username: user.username, email: user.email};
+    done(null, userObj);
   });
 }
 
