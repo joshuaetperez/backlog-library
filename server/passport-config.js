@@ -7,7 +7,7 @@ function initialize(passport) {
     const user = await getUserByEmail(email);
     if (user == null) {
       return done(null, false, {
-        message: 'Login failed. Invalid email or password',
+        message: 'Login failed. Incorrect email or password.',
       });
     }
     try {
@@ -15,7 +15,7 @@ function initialize(passport) {
         return done(null, user);
       } else {
         return done(null, false, {
-          message: 'Login failed. Invalid email or password',
+          message: 'Login failed. Incorrect email or password.',
         });
       }
     } catch (err) {
@@ -34,9 +34,10 @@ function initialize(passport) {
 }
 
 async function getUserByEmail(email) {
-  const response = await pool.query('SELECT * FROM users WHERE email = $1', [
-    email,
-  ]);
+  const response = await pool.query(
+    'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
+    [email]
+  );
   if (response.rowCount === 0) {
     return null;
   }

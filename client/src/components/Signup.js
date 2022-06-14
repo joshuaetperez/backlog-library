@@ -92,7 +92,7 @@ function Signup() {
         }
         setErrorObj(errorState);
       } else {
-        window.location = '/home';
+        window.location = '/';
       }
     } catch (err) {
       console.error(err.message);
@@ -113,7 +113,10 @@ function Signup() {
               className="form-control"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setErrorObj({...errorObj, emailExistsError: null});
+                setEmail(e.target.value);
+              }}
               required
             />
             {errorObj['emailExistsError'] !== null && (
@@ -132,7 +135,14 @@ function Signup() {
               className="form-control"
               id="username"
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              onChange={(e) => {
+                setErrorObj({
+                  ...errorObj,
+                  usernameExistsError: null,
+                  usernameLengthError: null,
+                });
+                setUsername(e.target.value);
+              }}
               required
             />
             {errorObj['usernameExistsError'] !== null && (
@@ -157,7 +167,13 @@ function Signup() {
               className="form-control"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setErrorObj({
+                  ...errorObj,
+                  passwordLengthError: null,
+                });
+                setPassword(e.target.value);
+              }}
               required
             />
             {errorObj['passwordLengthError'] !== null && (
@@ -176,7 +192,14 @@ function Signup() {
               className="form-control"
               id="confirm-password"
               value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
+              onChange={(e) => {
+                setErrorObj({
+                  ...errorObj,
+                  confirmPasswordLengthError: null,
+                  confirmPasswordNoMatchError: null,
+                });
+                setConfirmPassword(e.target.value);
+              }}
               required
             />
             {errorObj['confirmPasswordLengthError'] !== null && (

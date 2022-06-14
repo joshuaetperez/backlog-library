@@ -7,7 +7,6 @@ const app = express();
 const cors = require('cors');
 const passport = require('passport');
 const initializePassport = require('./passport-config');
-const flash = require('express-flash');
 const session = require('express-session');
 
 const loginRouter = require('./routes/login');
@@ -18,7 +17,6 @@ initializePassport(passport);
 app.use(cors({origin: 'http://localhost:3000', credentials: true}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
-app.use(flash());
 app.use(
   session({
     secret: process.env.SESSION_SECRET,

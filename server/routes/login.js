@@ -1,6 +1,5 @@
 const express = require('express');
 const passport = require('passport');
-const {checkAuthenticated} = require('../middlewares/check-authentication');
 
 const loginRouter = express.Router();
 

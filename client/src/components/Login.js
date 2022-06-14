@@ -4,26 +4,24 @@ import {Link} from 'react-router-dom';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [hasLoginFailed, setHasLoginFailed] = useState(null);
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
 
     try {
       const body = {email, password};
-      await fetch('http://localhost:5000/login', {
+      const response = await fetch('http://localhost:5000/login', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
         credentials: 'include',
       });
-
-      // Check if user is stored in session
-      await fetch('http://localhost:5000/user', {
-        credentials: 'include',
-      });
-
-      // Redirect to Homepage
-      window.location = '/';
+      if (response.status === 401) {
+        setHasLoginFailed(true);
+      } else {
+        window.location = '/';
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -33,6 +31,11 @@ function Login() {
     <div className="container-fluid bg-light d-flex flex-column justify-content-center flex-grow-1 p-0">
       <div className="container bg-white p-5">
         <h3 className="mb-5">Login</h3>
+        {hasLoginFailed && (
+          <div className="container bg-danger bg-gradient border border-secondary rounded text-white text-center p-2 mb-3">
+            Login failed. Incorrect email or password.
+          </div>
+        )}
         <form onSubmit={onSubmitForm}>
           <div className="mb-3">
             <label htmlFor="email" className="form-label">
@@ -43,7 +46,10 @@ function Login() {
               className="form-control"
               id="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => {
+                setHasLoginFailed(null);
+                setEmail(e.target.value);
+              }}
               required
             />
           </div>
@@ -56,7 +62,10 @@ function Login() {
               className="form-control"
               id="password"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e) => {
+                setHasLoginFailed(null);
+                setPassword(e.target.value);
+              }}
               required
             />
           </div>

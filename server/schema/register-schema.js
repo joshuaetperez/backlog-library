@@ -42,7 +42,7 @@ const registerSchema = [
 async function isUsernameInUse(username) {
   try {
     const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE username = $1',
+      'SELECT COUNT(*) AS total FROM users WHERE LOWER(username) = LOWER($1)',
       [username]
     );
     if (response.rows[0].total === '0') {
@@ -58,7 +58,7 @@ async function isUsernameInUse(username) {
 async function isEmailInUse(email) {
   try {
     const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE email = $1',
+      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1)',
       [email]
     );
     if (response.rows[0].total === '0') {
