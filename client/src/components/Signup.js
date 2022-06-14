@@ -3,8 +3,6 @@ import {useState} from 'react';
 function createDefaultErrorState() {
   return {
     emailExistsError: null,
-    usernameExistsError: null,
-    usernameLengthError: null,
     passwordLengthError: null,
     confirmPasswordLengthError: null,
     confirmPasswordNoMatchError: null,
@@ -13,9 +11,6 @@ function createDefaultErrorState() {
 
 const errorMessages = {
   emailExistsErrorMessage: 'Email address is already in use',
-  usernameExistsErrorMessage: 'Username is already in use',
-  usernameLengthErrorMessage:
-    'Username cannot be empty and must contain 20 characters or less',
   passwordLengthErrorMessage: 'Password must contain at least 6 characters',
   confirmPasswordLengthErrorMessage:
     'Confirmation password must contain at least 6 characters',
@@ -25,7 +20,6 @@ const errorMessages = {
 
 function Signup() {
   const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
@@ -35,7 +29,6 @@ function Signup() {
 
     // Client-side form validation
     let errorState = createDefaultErrorState();
-    if (username.length > 20) errorState.usernameLengthError = true;
     if (password.length < 6) errorState.passwordLengthError = true;
     if (confirmPassword.length < 6)
       errorState.confirmPasswordLengthError = true;
@@ -44,7 +37,6 @@ function Signup() {
 
     // If there is at least one of the following errors, display error messages on the form without making a server request
     if (
-      errorState.usernameLengthError === true ||
       errorState.passwordLengthError === true ||
       errorState.confirmPasswordLengthError === true ||
       errorState.confirmPasswordNoMatchError === true
@@ -56,7 +48,7 @@ function Signup() {
     // Server-side form validation
     errorState = createDefaultErrorState();
     try {
-      const body = {email, username, password, confirmPassword};
+      const body = {email, password, confirmPassword};
       const response = await fetch('http://localhost:5000/signup', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -70,12 +62,6 @@ function Signup() {
           switch (error.msg) {
             case errorMessages.emailExistsErrorMessage:
               errorState.emailExistsError = true;
-              break;
-            case errorMessages.usernameExistsErrorMessage:
-              errorState.usernameExistsError = true;
-              break;
-            case errorMessages.usernameLengthErrorMessage:
-              errorState.usernameLengthError = true;
               break;
             case errorMessages.passwordLengthErrorMessage:
               errorState.passwordLengthError = true;
@@ -123,38 +109,6 @@ function Signup() {
               <div id="email-exists-error">
                 <span className="material-icons">error</span>
                 {errorMessages.emailExistsErrorMessage}
-              </div>
-            )}
-          </div>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">
-              Username
-            </label>
-            <input
-              type="username"
-              className="form-control"
-              id="username"
-              value={username}
-              onChange={(e) => {
-                setErrorObj({
-                  ...errorObj,
-                  usernameExistsError: null,
-                  usernameLengthError: null,
-                });
-                setUsername(e.target.value);
-              }}
-              required
-            />
-            {errorObj['usernameExistsError'] !== null && (
-              <div id="username-exists-error">
-                <span className="material-icons">error</span>
-                {errorMessages.usernameExistsErrorMessage}
-              </div>
-            )}
-            {errorObj['usernameLengthError'] !== null && (
-              <div id="username-length-error">
-                <span className="material-icons">error</span>
-                {errorMessages.usernameLengthErrorMessage}
               </div>
             )}
           </div>

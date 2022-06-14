@@ -2,17 +2,6 @@ const {body} = require('express-validator');
 const pool = require('../db');
 
 const registerSchema = [
-  body('username')
-    .exists()
-    .isLength({min: 1, max: 20})
-    .withMessage(
-      'Username cannot be empty and must contain 20 characters or less'
-    )
-    .custom(async (value) => {
-      if (await isUsernameInUse(value)) {
-        throw new Error('Username is already in use');
-      }
-    }),
   body('email')
     .exists()
     .isEmail()
@@ -37,22 +26,6 @@ const registerSchema = [
       return true;
     }),
 ];
-
-// Returns true if the given username already exists, false otherwise
-async function isUsernameInUse(username) {
-  try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE LOWER(username) = LOWER($1)',
-      [username]
-    );
-    if (response.rows[0].total === '0') {
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.log(err.message);
-  }
-}
 
 // Returns true if the given email already exists, false otherwise
 async function isEmailInUse(email) {

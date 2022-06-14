@@ -13,11 +13,11 @@ signupRouter.post(
   validateRequestSchema,
   async (req, res) => {
     try {
-      const {username, email, password} = req.body;
+      const {email, password} = req.body;
       const hashedPassword = await bcrpyt.hash(password, 10);
       const newUser = await pool.query(
-        'INSERT INTO users (username, email, password) VALUES($1, $2, $3) RETURNING *',
-        [username, email, hashedPassword]
+        'INSERT INTO users (email, password) VALUES($1, $2) RETURNING *',
+        [email, hashedPassword]
       );
       res.json(newUser.rows[0]);
     } catch (err) {
