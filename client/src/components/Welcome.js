@@ -23,7 +23,7 @@ function Welcome() {
               <div className="col-sm">Manga</div>
             </div>
             <div className="row">
-              <div className="col-sm">Video Games</div>
+              <div className="col-sm">Games</div>
               <div className="col-sm">Books</div>
             </div>
           </div>
