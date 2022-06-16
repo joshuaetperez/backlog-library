@@ -26,6 +26,14 @@ body,
   color: #ff0000;
 }
 
+select:invalid {
+  color: grey;
+}
+
+select:valid {
+  color: black;
+}
+
 @media (min-width: 576px) {
   .card-height {
     height: 30rem;
