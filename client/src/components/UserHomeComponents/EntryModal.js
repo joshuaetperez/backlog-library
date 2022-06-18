@@ -6,15 +6,18 @@ function AddEntryModalButton() {
       type="button"
       className="btn btn-success"
       data-bs-toggle="modal"
-      data-bs-target="#addEntryModal"
+      data-bs-target="#entryModal"
     >
       Add Entry
     </button>
   );
 }
 
-function AddEntryForm() {
+function EntryForm() {
   const [title, setTitle] = useState('');
+  const [category, setCategory] = useState('All');
+  const [status, setStatus] = useState('');
+  const [priority, setPriority] = useState('');
   const [notes, setNotes] = useState('');
 
   // const onSubmitForm = async (e) => {
@@ -23,7 +26,8 @@ function AddEntryForm() {
 
   return (
     // onSubmit={onSubmitForm}
-    <form id="add-entry-form">
+    <form id="entry-form">
+      {/* Title */}
       <div className="mb-3">
         <label htmlFor="title" className="form-label">
           Title
@@ -39,6 +43,8 @@ function AddEntryForm() {
           required
         />
       </div>
+
+      {/* Category */}
       <div className="mb-3">
         <label htmlFor="category" className="form-label">
           Category
@@ -46,20 +52,24 @@ function AddEntryForm() {
         <select
           className="form-select"
           id="category"
+          value={category === 'All' ? '' : category}
+          onChange={(e) => setCategory(e.target.value)}
           aria-label="Category select"
           required
         >
           <option value="" hidden>
             Category
           </option>
-          <option value="movie">Movie</option>
-          <option value="tv">TV</option>
-          <option value="anime">Anime</option>
-          <option value="manga">Manga</option>
-          <option value="game">Game</option>
-          <option value="book">Book</option>
+          <option value="Movies">Movies</option>
+          <option value="TV">TV</option>
+          <option value="Anime">Anime</option>
+          <option value="Manga">Manga</option>
+          <option value="Games">Games</option>
+          <option value="Books">Books</option>
         </select>
       </div>
+
+      {/* Status */}
       <div className="mb-3">
         <label htmlFor="status" className="form-label">
           Status
@@ -67,16 +77,42 @@ function AddEntryForm() {
         <select
           className="form-select"
           id="status"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
           aria-label="Status select"
           required
         >
           <option value="" hidden>
             Status
           </option>
-          <option value="ongoing">Ongoing</option>
-          <option value="planning">Planning</option>
+          <option value="Ongoing">Ongoing</option>
+          <option value="Planning">Planning</option>
         </select>
       </div>
+
+      {/* Priority */}
+      <div className="mb-3">
+        <label htmlFor="priority" className="form-label">
+          Priority
+        </label>
+        <select
+          className="form-select"
+          id="priority"
+          value={priority}
+          onChange={(e) => setPriority(e.target.value)}
+          aria-label="Priority select"
+          required
+        >
+          <option value="" hidden>
+            Priority
+          </option>
+          <option value="High">High</option>
+          <option value="Medium">Medium</option>
+          <option value="Low">Low</option>
+        </select>
+      </div>
+
+      {/* Notes */}
       <div className="mb-3">
         <label htmlFor="notes" className="form-label">
           Notes
@@ -93,19 +129,19 @@ function AddEntryForm() {
   );
 }
 
-function AddEntryModal() {
+function EntryModal() {
   return (
     <div
       className="modal fade mt-5"
-      id="addEntryModal"
+      id="entryModal"
       tabIndex="-1"
-      aria-labelledby="addEntryLabel"
+      aria-labelledby="entryLabel"
       aria-hidden="true"
     >
       <div className="modal-dialog mt-5">
         <div className="modal-content">
           <div className="modal-header">
-            <h5 className="modal-title" id="addEntryModalLabel">
+            <h5 className="modal-title" id="entryModalLabel">
               Edit Entry
             </h5>
             <button
@@ -116,7 +152,7 @@ function AddEntryModal() {
             ></button>
           </div>
           <div className="modal-body">
-            <AddEntryForm />
+            <EntryForm />
           </div>
           <div className="modal-footer">
             <button
@@ -126,11 +162,7 @@ function AddEntryModal() {
             >
               Close
             </button>
-            <button
-              type="submit"
-              form="add-entry-form"
-              className="btn btn-primary"
-            >
+            <button type="submit" form="entry-form" className="btn btn-primary">
               Save changes
             </button>
           </div>
@@ -141,4 +173,4 @@ function AddEntryModal() {
 }
 
 export {AddEntryModalButton};
-export default AddEntryModal;
+export default EntryModal;

@@ -1,77 +1,75 @@
-import {useState} from 'react';
-
-function ListGroup() {
-  const [activeTab, setActiveTab] = useState('All');
+function ListGroup(props) {
+  const {category, setCategory} = props.categoryData;
 
   return (
     <div className="list-group p-0">
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'All' ? 'active' : ''
+          category === 'All' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('All')}
-        {...(activeTab === 'All' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('All')}
+        {...(category === 'All' ? {'aria-current': 'true'} : {})}
       >
         All
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'Movies' ? 'active' : ''
+          category === 'Movies' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('Movies')}
-        {...(activeTab === 'Movies' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('Movies')}
+        {...(category === 'Movies' ? {'aria-current': 'true'} : {})}
       >
         Movies
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'TV' ? 'active' : ''
+          category === 'TV' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('TV')}
-        {...(activeTab === 'TV' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('TV')}
+        {...(category === 'TV' ? {'aria-current': 'true'} : {})}
       >
         TV
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'Anime' ? 'active' : ''
+          category === 'Anime' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('Anime')}
-        {...(activeTab === 'Anime' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('Anime')}
+        {...(category === 'Anime' ? {'aria-current': 'true'} : {})}
       >
         Anime
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'Manga' ? 'active' : ''
+          category === 'Manga' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('Manga')}
-        {...(activeTab === 'Manga' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('Manga')}
+        {...(category === 'Manga' ? {'aria-current': 'true'} : {})}
       >
         Manga
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'Games' ? 'active' : ''
+          category === 'Games' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('Games')}
-        {...(activeTab === 'Games' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('Games')}
+        {...(category === 'Games' ? {'aria-current': 'true'} : {})}
       >
         Games
       </button>
       <button
         type="button"
         className={`list-group-item list-group-item-action ${
-          activeTab === 'Books' ? 'active' : ''
+          category === 'Books' ? 'active' : ''
         }`}
-        onClick={(e) => setActiveTab('Books')}
-        {...(activeTab === 'Books' ? {'aria-current': 'true'} : {})}
+        onClick={(e) => setCategory('Books')}
+        {...(category === 'Books' ? {'aria-current': 'true'} : {})}
       >
         Books
       </button>

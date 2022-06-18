@@ -1,7 +1,6 @@
 import {useContext} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {myContext} from './components/Context';
-import AddEntryModal from './components/UserHomeComponents/EntryModal';
 import Welcome from './components/Welcome';
 import UserHome from './components/UserHomeComponents/UserHome';
 import Header from './components/Header';
@@ -29,7 +28,6 @@ const RouteSwitch = () => {
   return (
     <div className="container-fluid d-flex flex-column min-vh-100 p-0">
       <BrowserRouter>
-        <AddEntryModal />
         <Header />
         <Routes>
           {isUserLoggedIn ? (
