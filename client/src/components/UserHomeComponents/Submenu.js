@@ -20,6 +20,7 @@ function Submenu(props) {
 
   return (
     <>
+      {/* Button that displays or hides submenu */}
       <button
         type="button"
         onClick={onSubmenuButtonClick}
@@ -35,10 +36,11 @@ function Submenu(props) {
             <ListGroup categoryData={props.categoryData} />
             <div className="d-grid gap-2 col-10 my-3 mx-auto">
               {/* Add Entry Button */}
-              <AddEntryModalButton />
+              <AddEntryModalButton
+                onAddEntryButtonClick={props.onAddEntryButtonClick}
+              />
             </div>
           </div>
-          {/* const {category, setCategory} = props.categoryData; */}
 
           {/* Sort Select*/}
           <div className="mb-3">
@@ -103,7 +105,7 @@ function Submenu(props) {
             </div>
           </div>
 
-          {/* Random */}
+          {/* Random Entry*/}
           <div className="mb-3">
             <h5 className="text-muted">Random</h5>
             <p className="mb-2">

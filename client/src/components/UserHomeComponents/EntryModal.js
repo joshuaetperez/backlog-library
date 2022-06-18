@@ -1,10 +1,9 @@
-import {useState} from 'react';
-
-function AddEntryModalButton() {
+function AddEntryModalButton(props) {
   return (
     <button
       type="button"
       className="btn btn-success"
+      onClick={props.onAddEntryButtonClick}
       data-bs-toggle="modal"
       data-bs-target="#entryModal"
     >
@@ -13,20 +12,26 @@ function AddEntryModalButton() {
   );
 }
 
-function EntryForm() {
-  const [title, setTitle] = useState('');
-  const [category, setCategory] = useState('All');
-  const [status, setStatus] = useState('');
-  const [priority, setPriority] = useState('');
-  const [notes, setNotes] = useState('');
+function EntryForm(props) {
+  const {
+    entryTitle,
+    entryCategory,
+    entryStatus,
+    entryPriority,
+    entryNotes,
+    setEntryTitle,
+    setEntryCategory,
+    setEntryStatus,
+    setEntryPriority,
+    setEntryNotes,
+  } = props.entryData;
 
-  // const onSubmitForm = async (e) => {
-  //   e.preventDefault();
-  // }
+  const onSubmitForm = async (e) => {
+    e.preventDefault();
+  };
 
   return (
-    // onSubmit={onSubmitForm}
-    <form id="entry-form">
+    <form id="entry-form" onSubmit={onSubmitForm}>
       {/* Title */}
       <div className="mb-3">
         <label htmlFor="title" className="form-label">
@@ -36,9 +41,9 @@ function EntryForm() {
           type="input"
           className="form-control"
           id="title"
-          value={title}
+          value={entryTitle}
           onChange={(e) => {
-            setTitle(e.target.value);
+            setEntryTitle(e.target.value);
           }}
           required
         />
@@ -52,8 +57,8 @@ function EntryForm() {
         <select
           className="form-select"
           id="category"
-          value={category === 'All' ? '' : category}
-          onChange={(e) => setCategory(e.target.value)}
+          value={entryCategory === 'All' ? '' : entryCategory}
+          onChange={(e) => setEntryCategory(e.target.value)}
           aria-label="Category select"
           required
         >
@@ -77,8 +82,8 @@ function EntryForm() {
         <select
           className="form-select"
           id="status"
-          value={status}
-          onChange={(e) => setStatus(e.target.value)}
+          value={entryStatus}
+          onChange={(e) => setEntryStatus(e.target.value)}
           aria-label="Status select"
           required
         >
@@ -98,8 +103,8 @@ function EntryForm() {
         <select
           className="form-select"
           id="priority"
-          value={priority}
-          onChange={(e) => setPriority(e.target.value)}
+          value={entryPriority}
+          onChange={(e) => setEntryPriority(e.target.value)}
           aria-label="Priority select"
           required
         >
@@ -121,15 +126,15 @@ function EntryForm() {
           className="form-control"
           id="notes"
           rows="3"
-          value={notes}
-          onChange={(e) => setNotes(e.target.value)}
+          value={entryNotes}
+          onChange={(e) => setEntryNotes(e.target.value)}
         ></textarea>
       </div>
     </form>
   );
 }
 
-function EntryModal() {
+function EntryModal(props) {
   return (
     <div
       className="modal fade mt-5"
@@ -152,7 +157,7 @@ function EntryModal() {
             ></button>
           </div>
           <div className="modal-body">
-            <EntryForm />
+            <EntryForm entryData={props.entryData} />
           </div>
           <div className="modal-footer">
             <button
