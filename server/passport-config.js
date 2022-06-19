@@ -1,6 +1,6 @@
 const LocalStrategy = require('passport-local').Strategy;
-const pool = require('./db');
 const bcrpyt = require('bcrypt');
+const {getUserByEmail, getUserByID} = require('./helpers');
 
 function initialize(passport) {
   const authenticateUser = async (email, password, done) => {
@@ -31,27 +31,6 @@ function initialize(passport) {
     const userObj = {email: user.email};
     done(null, userObj);
   });
-}
-
-async function getUserByEmail(email) {
-  const response = await pool.query(
-    'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
-    [email]
-  );
-  if (response.rowCount === 0) {
-    return null;
-  }
-  return response.rows[0];
-}
-
-async function getUserByID(user_id) {
-  const response = await pool.query('SELECT * FROM users WHERE user_id = $1', [
-    user_id,
-  ]);
-  if (response.rowCount === 0) {
-    return null;
-  }
-  return response.rows[0];
 }
 
 module.exports = initialize;

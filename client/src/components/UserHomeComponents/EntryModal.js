@@ -1,3 +1,6 @@
+import {useContext} from 'react';
+import {myContext} from '../Context';
+
 function AddEntryModalButton(props) {
   return (
     <button
@@ -25,9 +28,34 @@ function EntryForm(props) {
     setEntryPriority,
     setEntryNotes,
   } = props.entryData;
+  const email = useContext(myContext).email;
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
+
+    // TODO: Change method to POST/PUT depending on Add/Edit
+
+    try {
+      const body = {
+        email,
+        title: entryTitle,
+        category: entryCategory,
+        status: entryStatus,
+        priority: entryPriority,
+        notes: entryNotes,
+      };
+      const response = await fetch('http://localhost:5000/add_entry', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+      console.log(response);
+      const jsonData = await response.json();
+      console.log(jsonData);
+    } catch (err) {
+      console.error(err.message);
+    }
   };
 
   return (
@@ -42,6 +70,7 @@ function EntryForm(props) {
           className="form-control"
           id="title"
           value={entryTitle}
+          maxLength="100"
           onChange={(e) => {
             setEntryTitle(e.target.value);
           }}
@@ -127,6 +156,7 @@ function EntryForm(props) {
           id="notes"
           rows="3"
           value={entryNotes}
+          maxLength="1000"
           onChange={(e) => setEntryNotes(e.target.value)}
         ></textarea>
       </div>

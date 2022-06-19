@@ -53,6 +53,7 @@ function Signup() {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
+        credentials: 'include',
       });
       const jsonData = await response.json();
       const errorArray = jsonData.errors;

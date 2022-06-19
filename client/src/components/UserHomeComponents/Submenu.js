@@ -19,7 +19,7 @@ function Submenu(props) {
   };
 
   return (
-    <>
+    <div className="container d-flex flex-column text p-0">
       {/* Button that displays or hides submenu */}
       <button
         type="button"
@@ -121,7 +121,7 @@ function Submenu(props) {
           </div>
         </>
       )}
-    </>
+    </div>
   );
 }
 

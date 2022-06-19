@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import EntryModal from './EntryModal';
 import Submenu from './Submenu';
+import EntryGrid from './EntryGrid';
 
 function UserHome() {
   const [title, setTitle] = useState('');
@@ -55,6 +56,7 @@ function UserHome() {
             modalData={modalData}
             onAddEntryButtonClick={onAddEntryButtonClick}
           />
+          <EntryGrid />
         </div>
       </div>
     </>

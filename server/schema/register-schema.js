@@ -1,5 +1,5 @@
 const {body} = require('express-validator');
-const pool = require('../db');
+const {isEmailInUse} = require('../helpers');
 
 const registerSchema = [
   body('email')
@@ -26,21 +26,5 @@ const registerSchema = [
       return true;
     }),
 ];
-
-// Returns true if the given email already exists, false otherwise
-async function isEmailInUse(email) {
-  try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1)',
-      [email]
-    );
-    if (response.rows[0].total === '0') {
-      return false;
-    }
-    return true;
-  } catch (err) {
-    console.log(err.message);
-  }
-}
 
 module.exports = registerSchema;

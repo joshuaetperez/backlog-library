@@ -11,6 +11,7 @@ const session = require('express-session');
 
 const loginRouter = require('./routes/login');
 const signupRouter = require('./routes/signup');
+const entryRouter = require('./routes/entry');
 
 initializePassport(passport);
 
@@ -29,6 +30,7 @@ app.use(passport.session());
 
 app.use(loginRouter);
 app.use(signupRouter);
+app.use(entryRouter);
 app.get('/user', (req, res) => {
   res.send(req.user);
 });
