@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, useState} from 'react';
 import {myContext} from '../Context';
 
 function AddEntryModalButton(props) {
@@ -15,6 +15,27 @@ function AddEntryModalButton(props) {
   );
 }
 
+function createDefaultErrorState() {
+  return {
+    titleLengthError: null,
+    titleExistsError: null,
+    categoryInvalidError: null,
+    statusInvalidError: null,
+    priorityInvalidError: null,
+    notesLengthError: null,
+  };
+}
+
+const errorMessages = {
+  titleLengthErrorMessage: 'Title must contain between 1 and 100 characters',
+  titleExistsErrorMessage:
+    'Title already exists in this category with this user',
+  categoryInvalidErrorMessage: 'Category is invalid',
+  statusInvalidErrorMessage: 'Status is invalid',
+  priorityInvalidErrorMessage: 'Priority is invalid',
+  notesLengthErrorMessage: 'Notes cannot be more than 1000 characters',
+};
+
 function EntryForm(props) {
   const {
     entryTitle,
@@ -28,13 +49,24 @@ function EntryForm(props) {
     setEntryPriority,
     setEntryNotes,
   } = props.entryData;
+  const [errorObj, setErrorObj] = useState(createDefaultErrorState());
   const email = useContext(myContext).email;
+
+  // If modal is closed, remove all error messages
+  const modal = document.getElementById('entryModal');
+  if (modal !== null) {
+    modal.addEventListener('hide.bs.modal', function (event) {
+      setErrorObj(createDefaultErrorState());
+    });
+  }
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
 
     // TODO: Change method to POST/PUT depending on Add/Edit
 
+    // Server-side validation
+    const errorState = createDefaultErrorState();
     try {
       const body = {
         email,
@@ -50,9 +82,40 @@ function EntryForm(props) {
         body: JSON.stringify(body),
         credentials: 'include',
       });
-      console.log(response);
       const jsonData = await response.json();
-      console.log(jsonData);
+      const errorArray = jsonData.errors;
+      console.log(errorArray);
+
+      // If there is at least one of the following errors, display error messages on the form
+      if (errorArray !== undefined) {
+        for (let error of errorArray) {
+          switch (error.msg) {
+            case errorMessages.titleLengthErrorMessage:
+              errorState.titleLengthError = true;
+              break;
+            case errorMessages.titleExistsErrorMessage:
+              errorState.titleExistsError = true;
+              break;
+            case errorMessages.categoryInvalidErrorMessage:
+              errorState.categoryInvalidError = true;
+              break;
+            case errorMessages.statusInvalidErrorMessage:
+              errorState.statusInvalidError = true;
+              break;
+            case errorMessages.priorityInvalidErrorMessage:
+              errorState.priorityInvalidError = true;
+              break;
+            case errorMessages.notesLengthErrorMessage:
+              errorState.notesLengthError = true;
+              break;
+            default:
+              break;
+          }
+        }
+        setErrorObj(errorState);
+      } else {
+        window.location = '/';
+      }
     } catch (err) {
       console.error(err.message);
     }
@@ -73,9 +136,16 @@ function EntryForm(props) {
           maxLength="100"
           onChange={(e) => {
             setEntryTitle(e.target.value);
+            setErrorObj({...errorObj, titleExistsError: null});
           }}
           required
         />
+        {errorObj['titleExistsError'] !== null && (
+          <div id="title-exists-error">
+            <span className="material-icons">error</span>
+            Title already exists in the {entryCategory} category
+          </div>
+        )}
       </div>
 
       {/* Category */}
@@ -87,7 +157,10 @@ function EntryForm(props) {
           className="form-select"
           id="category"
           value={entryCategory === 'All' ? '' : entryCategory}
-          onChange={(e) => setEntryCategory(e.target.value)}
+          onChange={(e) => {
+            setEntryCategory(e.target.value);
+            setErrorObj({...errorObj, categoryInvalidError: null});
+          }}
           aria-label="Category select"
           required
         >
@@ -101,6 +174,12 @@ function EntryForm(props) {
           <option value="Games">Games</option>
           <option value="Books">Books</option>
         </select>
+        {errorObj['categoryInvalidError'] !== null && (
+          <div id="category-invalid-error">
+            <span className="material-icons">error</span>
+            {errorMessages.categoryInvalidErrorMessage}
+          </div>
+        )}
       </div>
 
       {/* Status */}
@@ -112,7 +191,10 @@ function EntryForm(props) {
           className="form-select"
           id="status"
           value={entryStatus}
-          onChange={(e) => setEntryStatus(e.target.value)}
+          onChange={(e) => {
+            setEntryStatus(e.target.value);
+            setErrorObj({...errorObj, statusInvalidError: null});
+          }}
           aria-label="Status select"
           required
         >
@@ -122,6 +204,12 @@ function EntryForm(props) {
           <option value="Ongoing">Ongoing</option>
           <option value="Planning">Planning</option>
         </select>
+        {errorObj['statusInvalidError'] !== null && (
+          <div id="status-invalid-error">
+            <span className="material-icons">error</span>
+            {errorMessages.statusInvalidErrorMessage}
+          </div>
+        )}
       </div>
 
       {/* Priority */}
@@ -133,7 +221,10 @@ function EntryForm(props) {
           className="form-select"
           id="priority"
           value={entryPriority}
-          onChange={(e) => setEntryPriority(e.target.value)}
+          onChange={(e) => {
+            setEntryPriority(e.target.value);
+            setErrorObj({...errorObj, priorityInvalidError: null});
+          }}
           aria-label="Priority select"
           required
         >
@@ -144,6 +235,12 @@ function EntryForm(props) {
           <option value="Medium">Medium</option>
           <option value="Low">Low</option>
         </select>
+        {errorObj['priorityInvalidError'] !== null && (
+          <div id="priority-invalid-error">
+            <span className="material-icons">error</span>
+            {errorMessages.priorityInvalidErrorMessage}
+          </div>
+        )}
       </div>
 
       {/* Notes */}
@@ -157,8 +254,17 @@ function EntryForm(props) {
           rows="3"
           value={entryNotes}
           maxLength="1000"
-          onChange={(e) => setEntryNotes(e.target.value)}
+          onChange={(e) => {
+            setEntryNotes(e.target.value);
+            setErrorObj({...errorObj, notesLengthError: null});
+          }}
         ></textarea>
+        {errorObj['notesLengthError'] !== null && (
+          <div id="notes-length-error">
+            <span className="material-icons">error</span>
+            {errorMessages.notesLengthErrorMessage}
+          </div>
+        )}
       </div>
     </form>
   );

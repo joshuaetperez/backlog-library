@@ -21,7 +21,12 @@ body,
 #username-length-error,
 #password-length-error,
 #confirm-password-length-error,
-#confirm-password-no-match-error {
+#confirm-password-no-match-error,
+#title-exists-error,
+#category-invalid-error,
+#status-invalid-error,
+#priority-invalid-error,
+#notes-length-error {
   display: flex;
   color: #ff0000;
 }
