@@ -1,10 +1,13 @@
 import {useState} from 'react';
 import {Link} from 'react-router-dom';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [hasLoginFailed, setHasLoginFailed] = useState(null);
+  const [hasLoginFailed, setHasLoginFailed] = useState(false);
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -28,56 +31,55 @@ function Login() {
   };
 
   return (
-    <div className="container-fluid bg-light d-flex flex-column justify-content-center flex-grow-1 p-0">
-      <div className="container bg-white p-5">
+    <div className="bg-light d-flex flex-column flex-grow-1 py-3">
+      {hasLoginFailed && (
+        <div className="container mt-md-3">
+          <Alert
+            variant="danger"
+            onClose={() => setHasLoginFailed(false)}
+            dismissible
+          >
+            <p className="m-0 text-center">
+              Login failed. Incorrect email or password.
+            </p>
+          </Alert>
+        </div>
+      )}
+      <div className="container bg-white my-md-3 p-3 p-md-5">
         <h3 className="mb-5">Login</h3>
-        {hasLoginFailed && (
-          <div className="container bg-danger bg-gradient border border-secondary rounded text-white text-center p-2 mb-3">
-            Login failed. Incorrect email or password.
-          </div>
-        )}
-        <form onSubmit={onSubmitForm}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">
-              Email
-            </label>
-            <input
+        <Form onSubmit={onSubmitForm}>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
               type="email"
-              className="form-control"
-              id="email"
               value={email}
               onChange={(e) => {
-                setHasLoginFailed(null);
+                setHasLoginFailed(false);
                 setEmail(e.target.value);
               }}
               required
             />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">
-              Password
-            </label>
-            <input
+          </Form.Group>
+          <Form.Group className="mb-3" controlId="password">
+            <Form.Label>Password</Form.Label>
+            <Form.Control
               type="password"
-              className="form-control"
-              id="password"
               value={password}
               onChange={(e) => {
-                setHasLoginFailed(null);
+                setHasLoginFailed(false);
                 setPassword(e.target.value);
               }}
               required
             />
-          </div>
-          <div className="mt-4 mb-3 text-center">
-            <button
-              type="submit"
-              className="btn btn-primary rounded-pill w-100 p-2"
-            >
-              Login
-            </button>
-          </div>
-        </form>
+          </Form.Group>
+          <Button
+            variant="primary"
+            type="submit"
+            className="rounded-pill w-100 mt-2 mb-3 p-2"
+          >
+            Login
+          </Button>
+        </Form>
         <div className="text-center mb-5 text-muted">Forgot Password?</div>
         <div className="text-center">
           Don't have an account? <Link to="/signup">Sign up</Link>

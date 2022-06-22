@@ -1,6 +1,11 @@
 import {useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {myContext} from './Context';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Nav from 'react-bootstrap/Nav';
+import Navbar from 'react-bootstrap/Navbar';
+import Stack from 'react-bootstrap/Stack';
 
 function Header() {
   const onLogOut = async () => {
@@ -17,43 +22,32 @@ function Header() {
 
   const isUserLoggedIn = useContext(myContext);
   return (
-    <div className="navbar bg-info flex-nowrap">
-      <div className="container">
-        <Link to="/" className="navbar-brand fs-3 text-wrap bold">
+    <Navbar bg="info">
+      <Container>
+        <Navbar.Brand as={Link} to="/" className="fs-3 fw-bold text-wrap">
           Backlog Library
-        </Link>
-        {/* isUserLoggedIn is only undefined before context is updated with fetched user data */}
-        {/* In this case, don't display buttons for loading screen */}
+        </Navbar.Brand>
+        {/* If on loading screen, don't show navbar buttons */}
         {isUserLoggedIn !== undefined && (
-          <div className="d-flex gap-2 justify-content-center text-nowrap">
+          <Stack direction="horizontal" gap={2} className="text-nowrap">
             {isUserLoggedIn ? (
-              <>
-                <button
-                  type="button"
-                  onClick={onLogOut}
-                  className="btn btn-secondary"
-                >
-                  Logout
-                </button>
-              </>
+              <Button variant="secondary" onClick={onLogOut}>
+                Logout
+              </Button>
             ) : (
               <>
-                <Link to="/login">
-                  <button type="button" className="btn btn-secondary">
-                    Login
-                  </button>
-                </Link>
-                <Link to="/signup">
-                  <button type="button" className="btn btn-primary">
-                    Sign Up
-                  </button>
-                </Link>
+                <Nav.Link as={Link} to="/login">
+                  <Button variant="secondary">Login</Button>
+                </Nav.Link>
+                <Nav.Link as={Link} to="/signup">
+                  <Button variant="primary">Sign Up</Button>
+                </Nav.Link>
               </>
             )}
-          </div>
+          </Stack>
         )}
-      </div>
-    </div>
+      </Container>
+    </Navbar>
   );
 }
 

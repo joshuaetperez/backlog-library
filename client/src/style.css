@@ -16,6 +16,10 @@ body,
   font-weight: 700;
 }
 
+.material-icons.md-22 {
+  font-size: 22px;
+}
+
 #email-exists-error,
 #username-exists-error,
 #username-length-error,
@@ -27,6 +31,11 @@ body,
 #status-invalid-error,
 #priority-invalid-error,
 #notes-length-error {
+  display: flex;
+  color: #ff0000;
+}
+
+.form-error {
   display: flex;
   color: #ff0000;
 }
