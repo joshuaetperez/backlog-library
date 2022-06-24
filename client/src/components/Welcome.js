@@ -7,8 +7,11 @@ import Col from 'react-bootstrap/Col';
 
 function Welcome() {
   return (
-    <div className="container-fluid bg-light py-3 d-flex flex-grow-1 justify-content-center">
-      <Card className="my-3 px-lg-5 bg-info rounded-4 card-height">
+    <Container
+      className="bg-light d-flex flex-grow-1 justify-content-center py-3"
+      fluid
+    >
+      <Card className="card-height bg-info my-3 px-lg-5 rounded-4">
         <Card.Body className="text-center">
           <Card.Title className="my-3 fs-2">Your Personal Backlog</Card.Title>
           <Card.Subtitle className="mb-4 fs-4 text-muted">
@@ -33,15 +36,13 @@ function Welcome() {
             </Row>
           </Container>
         </Card.Body>
-        <div className="mb-lg-4">
-          <Link to="/signup">
-            <Button variant="primary" className="rounded-4 w-100">
-              Make an account!
-            </Button>
-          </Link>
-        </div>
+        <Link to="/signup" className="mb-lg-4">
+          <Button type="button" variant="primary" className="rounded-4 w-100">
+            Make an account!
+          </Button>
+        </Link>
       </Card>
-    </div>
+    </Container>
   );
 }
 

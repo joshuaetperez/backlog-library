@@ -1,19 +1,9 @@
 import {useContext, useState} from 'react';
+import {useLocation} from 'react-router-dom';
 import {myContext} from '../Context';
-
-function AddEntryModalButton(props) {
-  return (
-    <button
-      type="button"
-      className="btn btn-success"
-      onClick={props.onAddEntryButtonClick}
-      data-bs-toggle="modal"
-      data-bs-target="#entryModal"
-    >
-      Add Entry
-    </button>
-  );
-}
+import Button from 'react-bootstrap/Button';
+import Form from 'react-bootstrap/Form';
+import Modal from 'react-bootstrap/Modal';
 
 function createDefaultErrorState() {
   return {
@@ -37,28 +27,16 @@ const errorMessages = {
 };
 
 function EntryForm(props) {
-  const {
-    entryTitle,
-    entryCategory,
-    entryStatus,
-    entryPriority,
-    entryNotes,
-    setEntryTitle,
-    setEntryCategory,
-    setEntryStatus,
-    setEntryPriority,
-    setEntryNotes,
-  } = props.entryData;
+  const location = useLocation();
+
+  const [title, setTitle] = useState('');
+  const [category, setCategory] = useState(location.pathname.substring(1));
+  const [status, setStatus] = useState(props.modalData.status);
+  const [priority, setPriority] = useState(props.modalData.priority);
+  const [notes, setNotes] = useState('');
+
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
   const email = useContext(myContext).email;
-
-  // If modal is closed, remove all error messages
-  const modal = document.getElementById('entryModal');
-  if (modal !== null) {
-    modal.addEventListener('hide.bs.modal', function (event) {
-      setErrorObj(createDefaultErrorState());
-    });
-  }
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -68,14 +46,7 @@ function EntryForm(props) {
     // Server-side validation
     const errorState = createDefaultErrorState();
     try {
-      const body = {
-        email,
-        title: entryTitle,
-        category: entryCategory,
-        status: entryStatus,
-        priority: entryPriority,
-        notes: entryNotes,
-      };
+      const body = {email, title, category, status, priority, notes};
       const response = await fetch('http://localhost:5000/add_entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -114,7 +85,8 @@ function EntryForm(props) {
         }
         setErrorObj(errorState);
       } else {
-        window.location = '/';
+        props.onHide();
+        props.onSetShowAlert(true);
       }
     } catch (err) {
       console.error(err.message);
@@ -122,43 +94,32 @@ function EntryForm(props) {
   };
 
   return (
-    <form id="entry-form" onSubmit={onSubmitForm}>
-      {/* Title */}
-      <div className="mb-3">
-        <label htmlFor="title" className="form-label">
-          Title
-        </label>
-        <input
-          type="input"
-          className="form-control"
-          id="title"
-          value={entryTitle}
-          maxLength="100"
+    <Form onSubmit={onSubmitForm} id="entry-form">
+      <Form.Group className="mb-3" controlId="title">
+        <Form.Label>Title</Form.Label>
+        <Form.Control
+          value={title}
           onChange={(e) => {
-            setEntryTitle(e.target.value);
+            setTitle(e.target.value);
             setErrorObj({...errorObj, titleExistsError: null});
           }}
+          maxLength="100"
+          autoFocus
           required
         />
         {errorObj['titleExistsError'] !== null && (
-          <div id="title-exists-error">
+          <Form.Text className="form-error fs-6">
             <span className="material-icons">error</span>
-            Title already exists in the {entryCategory} category
-          </div>
+            {errorMessages.titleExistsErrorMessage}
+          </Form.Text>
         )}
-      </div>
-
-      {/* Category */}
-      <div className="mb-3">
-        <label htmlFor="category" className="form-label">
-          Category
-        </label>
-        <select
-          className="form-select"
-          id="category"
-          value={entryCategory === 'All' ? '' : entryCategory}
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="category">
+        <Form.Label>Category</Form.Label>
+        <Form.Select
+          value={category === '' ? '' : category}
           onChange={(e) => {
-            setEntryCategory(e.target.value);
+            setCategory(e.target.value);
             setErrorObj({...errorObj, categoryInvalidError: null});
           }}
           aria-label="Category select"
@@ -167,32 +128,26 @@ function EntryForm(props) {
           <option value="" hidden>
             Category
           </option>
-          <option value="Movies">Movies</option>
-          <option value="TV">TV</option>
-          <option value="Anime">Anime</option>
-          <option value="Manga">Manga</option>
-          <option value="Games">Games</option>
-          <option value="Books">Books</option>
-        </select>
+          <option value="movies">Movies</option>
+          <option value="tv">TV</option>
+          <option value="anime">Anime</option>
+          <option value="manga">Manga</option>
+          <option value="games">Games</option>
+          <option value="books">Books</option>
+        </Form.Select>
         {errorObj['categoryInvalidError'] !== null && (
-          <div id="category-invalid-error">
+          <Form.Text className="form-error fs-6">
             <span className="material-icons">error</span>
             {errorMessages.categoryInvalidErrorMessage}
-          </div>
+          </Form.Text>
         )}
-      </div>
-
-      {/* Status */}
-      <div className="mb-3">
-        <label htmlFor="status" className="form-label">
-          Status
-        </label>
-        <select
-          className="form-select"
-          id="status"
-          value={entryStatus}
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="status">
+        <Form.Label>Status</Form.Label>
+        <Form.Select
+          value={status === '' ? '' : status}
           onChange={(e) => {
-            setEntryStatus(e.target.value);
+            setStatus(e.target.value);
             setErrorObj({...errorObj, statusInvalidError: null});
           }}
           aria-label="Status select"
@@ -201,28 +156,22 @@ function EntryForm(props) {
           <option value="" hidden>
             Status
           </option>
-          <option value="Ongoing">Ongoing</option>
-          <option value="Planning">Planning</option>
-        </select>
+          <option value="ongoing">Ongoing</option>
+          <option value="planning">Planning</option>
+        </Form.Select>
         {errorObj['statusInvalidError'] !== null && (
-          <div id="status-invalid-error">
+          <Form.Text className="form-error fs-6">
             <span className="material-icons">error</span>
             {errorMessages.statusInvalidErrorMessage}
-          </div>
+          </Form.Text>
         )}
-      </div>
-
-      {/* Priority */}
-      <div className="mb-3">
-        <label htmlFor="priority" className="form-label">
-          Priority
-        </label>
-        <select
-          className="form-select"
-          id="priority"
-          value={entryPriority}
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="priority">
+        <Form.Label>Priority</Form.Label>
+        <Form.Select
+          value={priority === '' ? '' : priority}
           onChange={(e) => {
-            setEntryPriority(e.target.value);
+            setPriority(e.target.value);
             setErrorObj({...errorObj, priorityInvalidError: null});
           }}
           aria-label="Priority select"
@@ -231,87 +180,68 @@ function EntryForm(props) {
           <option value="" hidden>
             Priority
           </option>
-          <option value="High">High</option>
-          <option value="Medium">Medium</option>
-          <option value="Low">Low</option>
-        </select>
+          <option value="high">High</option>
+          <option value="medium">Medium</option>
+          <option value="low">Low</option>
+        </Form.Select>
         {errorObj['priorityInvalidError'] !== null && (
-          <div id="priority-invalid-error">
+          <Form.Text className="form-error fs-6">
             <span className="material-icons">error</span>
             {errorMessages.priorityInvalidErrorMessage}
-          </div>
+          </Form.Text>
         )}
-      </div>
-
-      {/* Notes */}
-      <div className="mb-3">
-        <label htmlFor="notes" className="form-label">
-          Notes
-        </label>
-        <textarea
-          className="form-control"
-          id="notes"
-          rows="3"
-          value={entryNotes}
-          maxLength="1000"
+      </Form.Group>
+      <Form.Group className="mb-3" controlId="notes">
+        <Form.Label>Notes</Form.Label>
+        <Form.Control
+          as="textarea"
+          value={notes}
           onChange={(e) => {
-            setEntryNotes(e.target.value);
+            setNotes(e.target.value);
             setErrorObj({...errorObj, notesLengthError: null});
           }}
-        ></textarea>
+          maxLength="1000"
+          rows={3}
+        />
         {errorObj['notesLengthError'] !== null && (
-          <div id="notes-length-error">
+          <Form.Text className="form-error fs-6">
             <span className="material-icons">error</span>
             {errorMessages.notesLengthErrorMessage}
-          </div>
+          </Form.Text>
         )}
-      </div>
-    </form>
+      </Form.Group>
+    </Form>
   );
 }
 
 function EntryModal(props) {
   return (
-    <div
-      className="modal fade mt-5"
-      id="entryModal"
-      tabIndex="-1"
-      aria-labelledby="entryLabel"
-      aria-hidden="true"
+    <Modal
+      show={props.show}
+      onHide={props.onHide}
+      aria-labelledby="entry-modal"
+      centered
     >
-      <div className="modal-dialog mt-5">
-        <div className="modal-content">
-          <div className="modal-header">
-            <h5 className="modal-title" id="entryModalLabel">
-              Edit Entry
-            </h5>
-            <button
-              type="button"
-              className="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div className="modal-body">
-            <EntryForm entryData={props.entryData} />
-          </div>
-          <div className="modal-footer">
-            <button
-              type="button"
-              className="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              Close
-            </button>
-            <button type="submit" form="entry-form" className="btn btn-primary">
-              Save changes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+      <Modal.Header closeButton>
+        <Modal.Title id="entry-modal">Add Entry</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <EntryForm
+          onHide={props.onHide}
+          onSetShowAlert={props.onSetShowAlert}
+          modalData={props.modalData}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button type="button" variant="secondary" onClick={props.onHide}>
+          Close
+        </Button>
+        <Button type="submit" variant="primary" form="entry-form">
+          Submit
+        </Button>
+      </Modal.Footer>
+    </Modal>
   );
 }
 
-export {AddEntryModalButton};
 export default EntryModal;

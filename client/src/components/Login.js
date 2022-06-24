@@ -2,6 +2,7 @@ import {useState} from 'react';
 import {Link} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
 function Login() {
@@ -31,9 +32,9 @@ function Login() {
   };
 
   return (
-    <div className="bg-light d-flex flex-column flex-grow-1 py-3">
+    <div className="bg-light position-relative d-flex flex-column flex-grow-1 py-3">
       {hasLoginFailed && (
-        <div className="container mt-md-3">
+        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
           <Alert
             variant="danger"
             onClose={() => setHasLoginFailed(false)}
@@ -43,9 +44,9 @@ function Login() {
               Login failed. Incorrect email or password.
             </p>
           </Alert>
-        </div>
+        </Container>
       )}
-      <div className="container bg-white my-md-3 p-3 p-md-5">
+      <Container className="bg-white my-sm-3 p-3 p-sm-5">
         <h3 className="mb-5">Login</h3>
         <Form onSubmit={onSubmitForm}>
           <Form.Group className="mb-3" controlId="email">
@@ -73,8 +74,8 @@ function Login() {
             />
           </Form.Group>
           <Button
-            variant="primary"
             type="submit"
+            variant="primary"
             className="rounded-pill w-100 mt-2 mb-3 p-2"
           >
             Login
@@ -84,7 +85,7 @@ function Login() {
         <div className="text-center">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
-      </div>
+      </Container>
     </div>
   );
 }

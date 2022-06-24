@@ -43,22 +43,22 @@ async function isEmailInUse(email) {
 async function isTitleInUse(title, category, user_id) {
   try {
     let query = null;
-    if (category === 'Movies') {
+    if (category === 'movies') {
       (query = `SELECT COUNT(*) AS total FROM movies WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
-    } else if (category === 'TV') {
+    } else if (category === 'tv') {
       (query = `SELECT COUNT(*) AS total FROM tv WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
-    } else if (category === 'Anime') {
+    } else if (category === 'anime') {
       (query = `SELECT COUNT(*) AS total FROM anime WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
-    } else if (category === 'Manga') {
+    } else if (category === 'manga') {
       (query = `SELECT COUNT(*) AS total FROM manga WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
-    } else if (category === 'Games') {
+    } else if (category === 'games') {
       (query = `SELECT COUNT(*) AS total FROM games WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
-    } else if (category === 'Books') {
+    } else if (category === 'books') {
       (query = `SELECT COUNT(*) AS total FROM books WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
         [title, user_id];
     }

@@ -31,16 +31,20 @@ function Header() {
         {isUserLoggedIn !== undefined && (
           <Stack direction="horizontal" gap={2} className="text-nowrap">
             {isUserLoggedIn ? (
-              <Button variant="secondary" onClick={onLogOut}>
+              <Button type="button" variant="secondary" onClick={onLogOut}>
                 Logout
               </Button>
             ) : (
               <>
                 <Nav.Link as={Link} to="/login">
-                  <Button variant="secondary">Login</Button>
+                  <Button type="button" variant="secondary">
+                    Login
+                  </Button>
                 </Nav.Link>
                 <Nav.Link as={Link} to="/signup">
-                  <Button variant="primary">Sign Up</Button>
+                  <Button type="button" variant="primary">
+                    Sign Up
+                  </Button>
                 </Nav.Link>
               </>
             )}

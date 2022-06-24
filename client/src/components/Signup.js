@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
 function createDefaultErrorState() {
@@ -90,7 +91,7 @@ function Signup() {
 
   return (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
-      <div className="container bg-white my-md-3 p-3 p-md-5">
+      <Container className="bg-white my-sm-3 p-3 p-sm-5">
         <h3 className="mb-5">Sign up</h3>
         <Form onSubmit={onSubmitForm}>
           <Form.Group className="mb-3" controlId="email">
@@ -105,8 +106,8 @@ function Signup() {
               required
             />
             {errorObj['emailExistsError'] !== null && (
-              <Form.Text className="form-error">
-                <span className="material-icons md-22">error</span>
+              <Form.Text className="form-error fs-6">
+                <span className="material-icons">error</span>
                 {errorMessages.emailExistsErrorMessage}
               </Form.Text>
             )}
@@ -126,8 +127,8 @@ function Signup() {
               required
             />
             {errorObj['passwordLengthError'] !== null && (
-              <Form.Text className="form-error">
-                <span className="material-icons md-22">error</span>
+              <Form.Text className="form-error fs-6">
+                <span className="material-icons">error</span>
                 {errorMessages.passwordLengthErrorMessage}
               </Form.Text>
             )}
@@ -148,27 +149,27 @@ function Signup() {
               required
             />
             {errorObj['confirmPasswordLengthError'] !== null && (
-              <Form.Text className="form-error">
-                <span className="material-icons md-22">error</span>
+              <Form.Text className="form-error fs-6">
+                <span className="material-icons">error</span>
                 {errorMessages.confirmPasswordLengthErrorMessage}
               </Form.Text>
             )}
             {errorObj['confirmPasswordNoMatchError'] !== null && (
-              <Form.Text className="form-error">
-                <span className="material-icons md-22">error</span>
+              <Form.Text className="form-error fs-6">
+                <span className="material-icons">error</span>
                 {errorMessages.confirmPasswordNoMatchErrorMessage}
               </Form.Text>
             )}
           </Form.Group>
           <Button
-            variant="primary"
             type="submit"
+            variant="primary"
             className="rounded-pill w-100 mt-2 mb-3 p-2"
           >
             Sign up
           </Button>
         </Form>
-      </div>
+      </Container>
     </div>
   );
 }

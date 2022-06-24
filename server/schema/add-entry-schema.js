@@ -20,7 +20,7 @@ const addEntrySchema = [
       const user = await getUserByEmail(req.body.email);
       if (user === null) {
         throw new Error(
-          'Title cannot be check because given email is not registered to an active user'
+          'Title cannot be checked because given email is not registered to an active user'
         );
       }
       const user_id = user.user_id;
@@ -33,7 +33,7 @@ const addEntrySchema = [
     .exists()
     .custom((value, {req}) => {
       if (
-        !['Movies', 'TV', 'Anime', 'Manga', 'Games', 'Manga'].includes(value)
+        !['movies', 'tv', 'anime', 'manga', 'games', 'books'].includes(value)
       ) {
         throw new Error('Category is invalid');
       }
@@ -42,7 +42,7 @@ const addEntrySchema = [
   body('status')
     .exists()
     .custom((value, {req}) => {
-      if (!['Ongoing', 'Planning'].includes(value)) {
+      if (!['ongoing', 'planning'].includes(value)) {
         throw new Error('Status is invalid');
       }
       return true;
@@ -50,7 +50,7 @@ const addEntrySchema = [
   body('priority')
     .exists()
     .custom((value, {req}) => {
-      if (!['High', 'Medium', 'Low'].includes(value)) {
+      if (!['high', 'medium', 'low'].includes(value)) {
         throw new Error('Priority is invalid');
       }
       return true;

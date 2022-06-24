@@ -1,17 +1,11 @@
-import {useState} from 'react';
-import {AddEntryModalButton} from './EntryModal';
-import ListGroup from './ListGroup';
+import CategoryListGroup from './CategoryListGroup';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
 
 function Submenu(props) {
-  const [isSubmenuDisplayed, setIsSubmenuDisplayed] = useState(false);
   const {sort, setSort} = props.sortData;
   const {status, priority, setStatus, setPriority} = props.filterData;
-
-  const onSubmenuButtonClick = () => {
-    isSubmenuDisplayed
-      ? setIsSubmenuDisplayed(false)
-      : setIsSubmenuDisplayed(true);
-  };
 
   const onResetFilterButtonClick = () => {
     setStatus('');
@@ -19,109 +13,88 @@ function Submenu(props) {
   };
 
   return (
-    <div className="container d-flex flex-column text p-0">
-      {/* Button that displays or hides submenu */}
-      <button
-        type="button"
-        onClick={onSubmenuButtonClick}
-        className="btn btn-info d-flex justify-content-center align-self-end"
-      >
-        <span className="material-icons">menu</span>
-      </button>
-      {isSubmenuDisplayed && (
-        <>
-          {/* Category Listgroup */}
-          <div className="mb-3">
-            <h5 className="text-muted">Category</h5>
-            <ListGroup categoryData={props.categoryData} />
-            <div className="d-grid gap-2 col-10 my-3 mx-auto">
-              {/* Add Entry Button */}
-              <AddEntryModalButton
-                onAddEntryButtonClick={props.onAddEntryButtonClick}
-              />
-            </div>
-          </div>
+    <Container className="d-flex flex-column text p-0">
+      {/* Category Listgroup */}
+      <div className="mb-3">
+        <h5 className="text-muted">Category</h5>
+        <CategoryListGroup />
+        <div className="d-grid gap-2 col-10 my-3 mx-auto">
+          {/* Add Entry Button */}
+          <Button variant="success" onClick={props.onAddEntryButtonClick}>
+            Add Entry
+          </Button>
+        </div>
+      </div>
 
-          {/* Sort Select*/}
-          <div className="mb-3">
-            <h5 className="text-muted">Sort</h5>
-            <select
-              className="form-select"
-              id="sort"
-              value={sort}
-              onChange={(e) => setSort(e.target.value)}
-              aria-label="Sort select"
-              required
-            >
-              <option value="Title">Title</option>
-              <option value="Priority">Priority</option>
-            </select>
-          </div>
+      {/* Sort Select */}
+      <Form.Group className="mb-3" controlId="sort">
+        <h5 className="text-muted">Sort</h5>
+        <Form.Select
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+          aria-label="Sort select"
+        >
+          <option value="Title">Title</option>
+          <option value="Priority">Priority</option>
+        </Form.Select>
+      </Form.Group>
 
-          {/* Filters */}
-          <div className="mb-3">
-            <h5 className="text-muted">Filters</h5>
+      {/* Filters */}
+      <div className="mb-3">
+        <h5 className="text-muted">Filters</h5>
+        <Form.Group controlId="filters">
+          {/* Filter Status Sort */}
+          <Form.Select
+            className="mb-2"
+            value={status}
+            onChange={(e) => setStatus(e.target.value)}
+            aria-label="Status filter select"
+            required
+          >
+            <option value="" hidden>
+              Status
+            </option>
+            <option value="Ongoing">Ongoing</option>
+            <option value="Planning">Planning</option>
+          </Form.Select>
+          {/* Filter Priority Sort */}
+          <Form.Select
+            value={priority}
+            onChange={(e) => setPriority(e.target.value)}
+            aria-label="Priority filter select"
+            required
+          >
+            <option value="" hidden>
+              Priority
+            </option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
+          </Form.Select>
+        </Form.Group>
+        {/* Reset Filters Button */}
+        <div className="d-grid gap-2 col-6 my-3 mx-auto">
+          <Button
+            type="button"
+            variant="info"
+            onClick={onResetFilterButtonClick}
+          >
+            Reset Filters
+          </Button>
+        </div>
+      </div>
 
-            {/* Filter Status Sort */}
-            <select
-              className="form-select mb-2"
-              id="status-filter"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              aria-label="Status filter select"
-              required
-            >
-              <option value="" hidden>
-                Status
-              </option>
-              <option value="Ongoing">Ongoing</option>
-              <option value="Planning">Planning</option>
-            </select>
-
-            {/* Filter Priority Sort */}
-            <select
-              className="form-select mb-2"
-              id="priority-filter"
-              value={priority}
-              onChange={(e) => setPriority(e.target.value)}
-              aria-label="Priority filter select"
-              required
-            >
-              <option value="" hidden>
-                Priority
-              </option>
-              <option value="High">High</option>
-              <option value="Medium">Medium</option>
-              <option value="Low">Low</option>
-            </select>
-            <div className="d-grid gap-2 col-6 my-3 mx-auto">
-              <button
-                type="button"
-                onClick={onResetFilterButtonClick}
-                className="btn btn-info"
-              >
-                Reset Filters
-              </button>
-            </div>
-          </div>
-
-          {/* Random Entry*/}
-          <div className="mb-3">
-            <h5 className="text-muted">Random</h5>
-            <p className="mb-2">
-              Randomizer takes current category and filters (if any) into
-              account
-            </p>
-            <button
-              type="button"
-              className="btn btn-info d-flex justify-content-center"
-            >
-              <span className="material-icons">shuffle</span>
-            </button>
-          </div>
-        </>
-      )}
-    </div>
+      {/* Random Entry */}
+      <div className="mb-3">
+        <h5 className="text-muted">Random</h5>
+        <p className="mb-2">
+          Randomizer takes current category and filters (if any) into account
+        </p>
+        <Button type="button" variant="info" className="d-flex">
+          <span className="material-icons">shuffle</span>
+        </Button>
+      </div>
+    </Container>
   );
 }
 
