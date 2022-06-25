@@ -48,6 +48,12 @@ const RouteSwitch = () => {
           ) : (
             <>
               <Route path="/" element={<Welcome />} />
+              <Route path="movies" element={<Navigate to="/" />} />
+              <Route path="tv" element={<Navigate to="/" />} />
+              <Route path="anime" element={<Navigate to="/" />} />
+              <Route path="manga" element={<Navigate to="/" />} />
+              <Route path="games" element={<Navigate to="/" />} />
+              <Route path="books" element={<Navigate to="/" />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
             </>

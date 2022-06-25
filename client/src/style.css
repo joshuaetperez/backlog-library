@@ -4,9 +4,9 @@ body,
   min-height: 100%;
 }
 
-/* .card-height {
+.card-height {
   min-height: 30rem;
-} */
+}
 
 .bold-m {
   font-weight: 500;

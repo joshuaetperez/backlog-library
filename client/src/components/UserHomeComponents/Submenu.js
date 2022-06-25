@@ -1,4 +1,3 @@
-import CategoryListGroup from './CategoryListGroup';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -13,19 +12,7 @@ function Submenu(props) {
   };
 
   return (
-    <Container className="d-flex flex-column text p-0">
-      {/* Category Listgroup */}
-      <div className="mb-3">
-        <h5 className="text-muted">Category</h5>
-        <CategoryListGroup />
-        <div className="d-grid gap-2 col-10 my-3 mx-auto">
-          {/* Add Entry Button */}
-          <Button variant="success" onClick={props.onAddEntryButtonClick}>
-            Add Entry
-          </Button>
-        </div>
-      </div>
-
+    <Container className="p-0 mb-3">
       {/* Sort Select */}
       <Form.Group className="mb-3" controlId="sort">
         <h5 className="text-muted">Sort</h5>
@@ -34,8 +21,8 @@ function Submenu(props) {
           onChange={(e) => setSort(e.target.value)}
           aria-label="Sort select"
         >
-          <option value="Title">Title</option>
-          <option value="Priority">Priority</option>
+          <option value="title">Title</option>
+          <option value="priority">Priority</option>
         </Form.Select>
       </Form.Group>
 
@@ -54,8 +41,8 @@ function Submenu(props) {
             <option value="" hidden>
               Status
             </option>
-            <option value="Ongoing">Ongoing</option>
-            <option value="Planning">Planning</option>
+            <option value="ongoing">Ongoing</option>
+            <option value="planning">Planning</option>
           </Form.Select>
           {/* Filter Priority Sort */}
           <Form.Select
@@ -67,9 +54,9 @@ function Submenu(props) {
             <option value="" hidden>
               Priority
             </option>
-            <option value="High">High</option>
-            <option value="Medium">Medium</option>
-            <option value="Low">Low</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
           </Form.Select>
         </Form.Group>
         {/* Reset Filters Button */}

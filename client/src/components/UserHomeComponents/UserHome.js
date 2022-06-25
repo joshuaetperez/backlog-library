@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Outlet} from 'react-router-dom';
+import CategoryListGroup from './CategoryListGroup';
 import EntryModal from './EntryModal';
 import Submenu from './Submenu';
 import EntryGrid from './EntryGrid';
@@ -15,7 +16,7 @@ function UserHome() {
   const [entryModalShow, setEntryModalShow] = useState(false);
 
   // Sort and filters
-  const [sort, setSort] = useState('Title');
+  const [sort, setSort] = useState('priority');
   const [status, setStatus] = useState('');
   const [priority, setPriority] = useState('');
 
@@ -64,6 +65,19 @@ function UserHome() {
           </Container>
         )}
         <Container className="container my-3 p-0 d-flex flex-column">
+          {/* Category Listgroup */}
+          <Container className="p-0">
+            <div className="mb-3">
+              <h5 className="text-muted">Category</h5>
+              <CategoryListGroup />
+              <div className="d-grid gap-2 col-10 my-3 mx-auto">
+                {/* Add Entry Button */}
+                <Button variant="success" onClick={onAddEntryButtonClick}>
+                  Add Entry
+                </Button>
+              </div>
+            </div>
+          </Container>
           <Button
             type="button"
             variant="info"
@@ -75,11 +89,7 @@ function UserHome() {
             <span className="material-icons">menu</span>
           </Button>
           {submenuShow && (
-            <Submenu
-              sortData={sortData}
-              filterData={filterData}
-              onAddEntryButtonClick={onAddEntryButtonClick}
-            />
+            <Submenu sortData={sortData} filterData={filterData} />
           )}
           <EntryGrid />
           <Outlet />
