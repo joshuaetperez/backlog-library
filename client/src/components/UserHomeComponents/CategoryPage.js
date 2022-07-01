@@ -1,7 +1,5 @@
-import {useLocation} from 'react-router-dom';
-
+// Only exists so users can type in a route in the URL (ex. /movies)
 function CategoryPage() {
-  const location = useLocation();
-  return <div>{location.pathname.substring(1)}</div>;
+  return null;
 }
 export default CategoryPage;

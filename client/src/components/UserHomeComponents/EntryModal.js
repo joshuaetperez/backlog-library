@@ -1,9 +1,9 @@
-import {useContext, useState} from 'react';
+import {useState} from 'react';
 import {useLocation} from 'react-router-dom';
-import {myContext} from '../Context';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
+import {categoryArray} from './entry_helpers';
 
 function createDefaultErrorState() {
   return {
@@ -27,16 +27,15 @@ const errorMessages = {
 };
 
 function EntryForm(props) {
-  const location = useLocation();
-
   const [title, setTitle] = useState('');
-  const [category, setCategory] = useState(location.pathname.substring(1));
-  const [status, setStatus] = useState(props.modalData.status);
-  const [priority, setPriority] = useState(props.modalData.priority);
+  const [categoryID, setCategoryID] = useState(
+    categoryArray.indexOf(useLocation().pathname.substring(1))
+  );
+  const [statusID, setStatusID] = useState(props.modalData.statusID);
+  const [priorityID, setPriorityID] = useState(props.modalData.priorityID);
   const [notes, setNotes] = useState('');
 
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
-  const email = useContext(myContext).email;
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -46,7 +45,7 @@ function EntryForm(props) {
     // Server-side validation
     const errorState = createDefaultErrorState();
     try {
-      const body = {email, title, category, status, priority, notes};
+      const body = {categoryID, statusID, priorityID, title, notes};
       const response = await fetch('http://localhost:5000/add_entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -55,11 +54,10 @@ function EntryForm(props) {
       });
       const jsonData = await response.json();
       const errorArray = jsonData.errors;
-      console.log(errorArray);
 
       // If there is at least one of the following errors, display error messages on the form
       if (errorArray !== undefined) {
-        for (let error of errorArray) {
+        for (const error of errorArray) {
           switch (error.msg) {
             case errorMessages.titleLengthErrorMessage:
               errorState.titleLengthError = true;
@@ -117,9 +115,9 @@ function EntryForm(props) {
       <Form.Group className="mb-3" controlId="category">
         <Form.Label>Category</Form.Label>
         <Form.Select
-          value={category === '' ? '' : category}
+          value={categoryID.toString()}
           onChange={(e) => {
-            setCategory(e.target.value);
+            setCategoryID(parseInt(e.target.value));
             setErrorObj({...errorObj, categoryInvalidError: null});
           }}
           aria-label="Category select"
@@ -128,12 +126,12 @@ function EntryForm(props) {
           <option value="" hidden>
             Category
           </option>
-          <option value="movies">Movies</option>
-          <option value="tv">TV</option>
-          <option value="anime">Anime</option>
-          <option value="manga">Manga</option>
-          <option value="games">Games</option>
-          <option value="books">Books</option>
+          <option value="1">Movies</option>
+          <option value="2">TV</option>
+          <option value="3">Anime</option>
+          <option value="4">Manga</option>
+          <option value="5">Games</option>
+          <option value="6">Books</option>
         </Form.Select>
         {errorObj['categoryInvalidError'] !== null && (
           <Form.Text className="form-error fs-6">
@@ -145,9 +143,9 @@ function EntryForm(props) {
       <Form.Group className="mb-3" controlId="status">
         <Form.Label>Status</Form.Label>
         <Form.Select
-          value={status === '' ? '' : status}
+          value={statusID.toString()}
           onChange={(e) => {
-            setStatus(e.target.value);
+            setStatusID(parseInt(e.target.value));
             setErrorObj({...errorObj, statusInvalidError: null});
           }}
           aria-label="Status select"
@@ -156,8 +154,8 @@ function EntryForm(props) {
           <option value="" hidden>
             Status
           </option>
-          <option value="ongoing">Ongoing</option>
-          <option value="planning">Planning</option>
+          <option value="1">Ongoing</option>
+          <option value="2">Planning</option>
         </Form.Select>
         {errorObj['statusInvalidError'] !== null && (
           <Form.Text className="form-error fs-6">
@@ -169,9 +167,9 @@ function EntryForm(props) {
       <Form.Group className="mb-3" controlId="priority">
         <Form.Label>Priority</Form.Label>
         <Form.Select
-          value={priority === '' ? '' : priority}
+          value={priorityID.toString()}
           onChange={(e) => {
-            setPriority(e.target.value);
+            setPriorityID(parseInt(e.target.value));
             setErrorObj({...errorObj, priorityInvalidError: null});
           }}
           aria-label="Priority select"
@@ -180,9 +178,9 @@ function EntryForm(props) {
           <option value="" hidden>
             Priority
           </option>
-          <option value="high">High</option>
-          <option value="medium">Medium</option>
-          <option value="low">Low</option>
+          <option value="1">High</option>
+          <option value="2">Medium</option>
+          <option value="3">Low</option>
         </Form.Select>
         {errorObj['priorityInvalidError'] !== null && (
           <Form.Text className="form-error fs-6">

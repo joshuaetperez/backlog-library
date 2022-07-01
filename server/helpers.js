@@ -2,29 +2,51 @@ const pool = require('./db');
 
 // Returns user object if given email is active
 async function getUserByEmail(email) {
-  const response = await pool.query(
-    'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
-    [email]
-  );
-  if (response.rowCount === 0) {
-    return null;
+  try {
+    const response = await pool.query(
+      'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
+      [email]
+    );
+    if (response.rowCount === 0) {
+      return null;
+    }
+    return response.rows[0];
+  } catch (err) {
+    console.error(err.message);
   }
-  return response.rows[0];
 }
 
 // Returns user object if given user_id is active
 async function getUserByID(user_id) {
-  const response = await pool.query('SELECT * FROM users WHERE user_id = $1', [
-    user_id,
-  ]);
-  if (response.rowCount === 0) {
-    return null;
+  try {
+    const response = await pool.query(
+      'SELECT * FROM users WHERE user_id = $1',
+      [user_id]
+    );
+    if (response.rowCount === 0) {
+      return null;
+    }
+    return response.rows[0];
+  } catch (err) {
+    console.error(err.message);
   }
-  return response.rows[0];
+}
+
+// Returns all of user entries in an array
+async function getEntries(user_id) {
+  try {
+    const response = await pool.query(
+      'SELECT entry_id, category_id, status_id, priority_id, title, notes FROM entries WHERE user_id = $1',
+      [user_id]
+    );
+    return response.rows;
+  } catch (err) {
+    console.error(err.message);
+  }
 }
 
 // Returns true if the given email already exists, false otherwise
-async function isEmailInUse(email) {
+async function checkEmailInUse(email) {
   try {
     const response = await pool.query(
       'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1)',
@@ -39,33 +61,14 @@ async function isEmailInUse(email) {
   }
 }
 
-// Returns true if the given title, category, AND user_id combination already exists, false otherwise
-async function isTitleInUse(title, category, user_id) {
+// Returns true if the given title, category_id, AND user_id combination already exists, false otherwise
+async function checkTitleInUse(title, category_id, user_id) {
+  if (!(category_id >= 1 && category_id <= 6)) return null;
   try {
-    let query = null;
-    if (category === 'movies') {
-      (query = `SELECT COUNT(*) AS total FROM movies WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    } else if (category === 'tv') {
-      (query = `SELECT COUNT(*) AS total FROM tv WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    } else if (category === 'anime') {
-      (query = `SELECT COUNT(*) AS total FROM anime WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    } else if (category === 'manga') {
-      (query = `SELECT COUNT(*) AS total FROM manga WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    } else if (category === 'games') {
-      (query = `SELECT COUNT(*) AS total FROM games WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    } else if (category === 'books') {
-      (query = `SELECT COUNT(*) AS total FROM books WHERE LOWER(title) = LOWER($1) AND user_id = $2`),
-        [title, user_id];
-    }
-    if (query === null) {
-      return null;
-    }
-    const response = await pool.query(query, [title, user_id]);
+    const response = await pool.query(
+      `SELECT COUNT(*) AS total FROM entries WHERE LOWER(title) = LOWER($1) AND user_id = $2 AND category_id = $3`,
+      [title, user_id, category_id]
+    );
     if (response.rows[0].total === '0') {
       return false;
     }
@@ -75,4 +78,10 @@ async function isTitleInUse(title, category, user_id) {
   }
 }
 
-module.exports = {getUserByEmail, getUserByID, isEmailInUse, isTitleInUse};
+module.exports = {
+  getUserByEmail,
+  getUserByID,
+  checkEmailInUse,
+  checkTitleInUse,
+  getEntries,
+};

@@ -12,6 +12,7 @@ const session = require('express-session');
 const loginRouter = require('./routes/login');
 const signupRouter = require('./routes/signup');
 const entryRouter = require('./routes/entry');
+const userRouter = require('./routes/user');
 
 initializePassport(passport);
 
@@ -31,9 +32,8 @@ app.use(passport.session());
 app.use(loginRouter);
 app.use(signupRouter);
 app.use(entryRouter);
-app.get('/user', (req, res) => {
-  res.send(req.user);
-});
+app.use(userRouter);
+
 const port = 5000;
 app.listen(port, () => {
   console.log(`Server is listening at port ${port}`);

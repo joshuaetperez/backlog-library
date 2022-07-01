@@ -62,7 +62,7 @@ function Signup() {
       const errorArray = jsonData.errors;
       // If there is at least one of the following errors, display error messages on the form
       if (errorArray !== undefined) {
-        for (let error of errorArray) {
+        for (const error of errorArray) {
           switch (error.msg) {
             case errorMessages.emailExistsErrorMessage:
               errorState.emailExistsError = true;

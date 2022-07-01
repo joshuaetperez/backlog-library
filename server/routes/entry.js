@@ -1,6 +1,6 @@
 const express = require('express');
 const pool = require('../db');
-const {getUserByID, getUserByEmail} = require('../helpers');
+const {getEntries} = require('../helpers');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 const addEntrySchema = require('../schema/add-entry-schema');
 
@@ -13,15 +13,10 @@ modalEntryRouter.post(
   validateRequestSchema,
   async (req, res) => {
     try {
-      const {email, category, title, status, priority, notes} = req.body;
-      const table = category.toLowerCase();
-      const user = await getUserByEmail(email);
-      const user_id = user.user_id;
-
-      // Table name has already been validated so no worry about SQL injections
+      const {categoryID, statusID, priorityID, title, notes} = req.body;
       const newEntry = await pool.query(
-        `INSERT INTO ${table} (user_id, title, status, priority, notes) VALUES($1, $2, $3, $4, $5) RETURNING *`,
-        [user_id, title, status, priority, notes]
+        `INSERT INTO entries (user_id, category_id, status_id, priority_id, title, notes) VALUES($1, $2, $3, $4, $5, $6) RETURNING *`,
+        [req.user.userID, categoryID, statusID, priorityID, title, notes]
       );
       res.json(newEntry.rows[0]);
     } catch (err) {
@@ -29,5 +24,10 @@ modalEntryRouter.post(
     }
   }
 );
+
+modalEntryRouter.get('/get_entries', async (req, res) => {
+  const entries = await getEntries(req.user.userID);
+  res.send(entries);
+});
 
 module.exports = modalEntryRouter;

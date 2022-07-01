@@ -3,12 +3,37 @@ import {Outlet} from 'react-router-dom';
 import CategoryListGroup from './CategoryListGroup';
 import EntryModal from './EntryModal';
 import Submenu from './Submenu';
-import EntryGrid from './EntryGrid';
+import Entries from './Entries';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import {sortEntries} from './entry_helpers';
 
 function UserHome() {
+  // Loading state (need to fetch user entries first)
+  const [loading, setLoading] = useState(true);
+
+  // User entries
+  const [entries, setEntries] = useState([]);
+  useEffect(() => {
+    async function getEntries() {
+      try {
+        const response = await fetch(`http://localhost:5000/get_entries`, {
+          credentials: 'include',
+        });
+        const entries = await response.json();
+        setEntries(entries);
+        setLoading(false);
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    if (loading && entries.length === 0) {
+      getEntries();
+    }
+  }, [loading, entries.length]);
+
   // Submenu
   const [submenuShow, setSubmenuShow] = useState(false);
 
@@ -16,26 +41,39 @@ function UserHome() {
   const [entryModalShow, setEntryModalShow] = useState(false);
 
   // Sort and filters
-  const [sort, setSort] = useState('priority');
-  const [status, setStatus] = useState('');
-  const [priority, setPriority] = useState('');
+  const [timeToSort, setTimeToSort] = useState(true);
+  const [sortID, setSortID] = useState(2);
+  const [statusID, setStatusID] = useState(0);
+  const [priorityID, setPriorityID] = useState(0);
+  useEffect(() => {
+    if (timeToSort && entries.length > 0) {
+      const sortedEntries = sortEntries([...entries], sortID);
+      setEntries(sortedEntries);
+      setTimeToSort(false);
+    }
+  }, [entries, timeToSort, sortID]);
 
   // Alerts
   const [showAlert, setShowAlert] = useState(false);
-
-  // Organizing props
-  const sortData = {sort, setSort};
-  const filterData = {status, priority, setStatus, setPriority};
-  const modalData = {
-    status,
-    priority,
-  };
-
   useEffect(() => {
     if (showAlert === true) {
       setTimeout(() => setShowAlert(false), 3000);
     }
   }, [showAlert]);
+
+  // Organizing props
+  const sortData = {sortID, setTimeToSort, setSortID};
+  const filterData = {statusID, priorityID, setStatusID, setPriorityID};
+  const modalData = {
+    statusID,
+    priorityID,
+  };
+  const entryData = {
+    statusID,
+    priorityID,
+    entries,
+    setEntries,
+  };
 
   const onAddEntryButtonClick = () => {
     setEntryModalShow(true);
@@ -91,7 +129,7 @@ function UserHome() {
           {submenuShow && (
             <Submenu sortData={sortData} filterData={filterData} />
           )}
-          <EntryGrid />
+          <Entries entryData={entryData} />
           <Outlet />
         </Container>
       </Container>

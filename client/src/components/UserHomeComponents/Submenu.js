@@ -3,12 +3,12 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
 function Submenu(props) {
-  const {sort, setSort} = props.sortData;
-  const {status, priority, setStatus, setPriority} = props.filterData;
+  const {sortID, setTimeToSort, setSortID} = props.sortData;
+  const {statusID, priorityID, setStatusID, setPriorityID} = props.filterData;
 
   const onResetFilterButtonClick = () => {
-    setStatus('');
-    setPriority('');
+    setStatusID(0);
+    setPriorityID(0);
   };
 
   return (
@@ -17,12 +17,16 @@ function Submenu(props) {
       <Form.Group className="mb-3" controlId="sort">
         <h5 className="text-muted">Sort</h5>
         <Form.Select
-          value={sort}
-          onChange={(e) => setSort(e.target.value)}
+          value={sortID.toString()}
+          onChange={(e) => {
+            setSortID(parseInt(e.target.value));
+            setTimeToSort(true);
+          }}
           aria-label="Sort select"
         >
-          <option value="title">Title</option>
-          <option value="priority">Priority</option>
+          <option value="1">Title</option>
+          <option value="2">Priority</option>
+          <option value="3">Type</option>
         </Form.Select>
       </Form.Group>
 
@@ -33,30 +37,30 @@ function Submenu(props) {
           {/* Filter Status Sort */}
           <Form.Select
             className="mb-2"
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
+            value={statusID}
+            onChange={(e) => setStatusID(parseInt(e.target.value))}
             aria-label="Status filter select"
             required
           >
             <option value="" hidden>
               Status
             </option>
-            <option value="ongoing">Ongoing</option>
-            <option value="planning">Planning</option>
+            <option value="1">Ongoing</option>
+            <option value="2">Planning</option>
           </Form.Select>
           {/* Filter Priority Sort */}
           <Form.Select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
+            value={priorityID}
+            onChange={(e) => setPriorityID(parseInt(e.target.value))}
             aria-label="Priority filter select"
             required
           >
             <option value="" hidden>
               Priority
             </option>
-            <option value="high">High</option>
-            <option value="medium">Medium</option>
-            <option value="low">Low</option>
+            <option value="1">High</option>
+            <option value="2">Medium</option>
+            <option value="3">Low</option>
           </Form.Select>
         </Form.Group>
         {/* Reset Filters Button */}

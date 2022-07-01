@@ -1,5 +1,5 @@
 const {body} = require('express-validator');
-const {isEmailInUse} = require('../helpers');
+const {checkEmailInUse} = require('../helpers');
 
 const registerSchema = [
   body('email')
@@ -7,7 +7,7 @@ const registerSchema = [
     .isEmail()
     .withMessage('Email must be a valid email address')
     .custom(async (value) => {
-      if (await isEmailInUse(value)) {
+      if (await checkEmailInUse(value)) {
         throw new Error('Email address is already in use');
       }
     }),
