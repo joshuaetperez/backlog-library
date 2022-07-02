@@ -3,6 +3,7 @@ const pool = require('../db');
 const {getEntries} = require('../helpers');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 const addEntrySchema = require('../schema/add-entry-schema');
+const editEntrySchema = require('../schema/edit-entry-scheme');
 
 const modalEntryRouter = express.Router();
 
@@ -25,6 +26,27 @@ modalEntryRouter.post(
   }
 );
 
+// Validates form info and edits the corresponding entry in the database if criteria is met
+modalEntryRouter.post(
+  '/edit_entry',
+  editEntrySchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      const {entryID, categoryID, statusID, priorityID, title, notes} =
+        req.body;
+      const edittedEntry = await pool.query(
+        `UPDATE entries SET (category_id, status_id, priority_id, title, notes) = ($1, $2, $3, $4, $5) WHERE entry_id = $6 RETURNING *`,
+        [categoryID, statusID, priorityID, title, notes, entryID]
+      );
+      res.json(edittedEntry.rows[0]);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+);
+
+// Fetches all entries belonging to the user and sends it to the client
 modalEntryRouter.get('/get_entries', async (req, res) => {
   const entries = await getEntries(req.user.userID);
   res.send(entries);

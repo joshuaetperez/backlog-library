@@ -1,13 +1,14 @@
 import {useEffect, useState} from 'react';
 import {Outlet} from 'react-router-dom';
 import CategoryListGroup from './CategoryListGroup';
-import EntryModal from './EntryModal';
+import AddEntryModal from './AddEntryModal';
+import EditEntryModal from './EditEntryModal';
 import Submenu from './Submenu';
 import Entries from './Entries';
+import {sortEntries} from './entry_helpers';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import {sortEntries} from './entry_helpers';
 
 function UserHome() {
   // Loading state (need to fetch user entries first)
@@ -15,6 +16,7 @@ function UserHome() {
 
   // User entries
   const [entries, setEntries] = useState([]);
+  const [edittedEntry, setEdittedEntry] = useState(null);
   useEffect(() => {
     async function getEntries() {
       try {
@@ -38,7 +40,8 @@ function UserHome() {
   const [submenuShow, setSubmenuShow] = useState(false);
 
   // Modals
-  const [entryModalShow, setEntryModalShow] = useState(false);
+  const [addEntryModalShow, setAddEntryModalShow] = useState(false);
+  const [editEntryModalShow, setEditEntryModalShow] = useState(false);
 
   // Sort and filters
   const [timeToSort, setTimeToSort] = useState(true);
@@ -54,51 +57,78 @@ function UserHome() {
   }, [entries, timeToSort, sortID]);
 
   // Alerts
-  const [showAlert, setShowAlert] = useState(false);
+  const [showAddAlert, setShowAddAlert] = useState(false);
+  const [showEditAlert, setShowEditAlert] = useState(false);
   useEffect(() => {
-    if (showAlert === true) {
-      setTimeout(() => setShowAlert(false), 3000);
+    if (showAddAlert) {
+      setTimeout(() => setShowAddAlert(false), 3000);
+    } else if (showEditAlert) {
+      setTimeout(() => setShowEditAlert(false), 3000);
     }
-  }, [showAlert]);
+  }, [showAddAlert, showEditAlert]);
 
   // Organizing props
   const sortData = {sortID, setTimeToSort, setSortID};
   const filterData = {statusID, priorityID, setStatusID, setPriorityID};
-  const modalData = {
-    statusID,
-    priorityID,
-  };
   const entryData = {
     statusID,
     priorityID,
     entries,
     setEntries,
+    setTimeToSort,
+  };
+  const editModalData = {
+    entries,
+    edittedEntry,
+    setEntries,
+    setTimeToSort,
   };
 
   const onAddEntryButtonClick = () => {
-    setEntryModalShow(true);
+    setAddEntryModalShow(true);
+  };
+
+  const onEditEntryClick = () => {
+    setEditEntryModalShow(true);
   };
 
   return (
     <>
-      <EntryModal
-        show={entryModalShow}
-        onHide={() => setEntryModalShow(false)}
-        onSetShowAlert={setShowAlert}
-        modalData={modalData}
+      <AddEntryModal
+        show={addEntryModalShow}
+        onHide={() => setAddEntryModalShow(false)}
+        onSetShowAlert={setShowAddAlert}
+        entryData={entryData}
+      />
+      <EditEntryModal
+        show={editEntryModalShow}
+        onHide={() => setEditEntryModalShow(false)}
+        onSetShowAlert={setShowEditAlert}
+        editModalData={editModalData}
       />
       <Container
         fluid
         className="bg-light position-relative py-3 d-flex flex-column flex-grow-1"
       >
-        {showAlert && (
+        {showAddAlert && (
           <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
             <Alert
               variant="success"
-              onClose={() => setShowAlert(false)}
+              onClose={() => setShowAddAlert(false)}
               dismissible
             >
               <p className="m-0 text-center">Entry added successfully!</p>
+            </Alert>
+          </Container>
+        )}
+        {showEditAlert && (
+          <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
+            <Alert
+              variant="success"
+              onClose={() => setShowEditAlert(false)}
+              dismissible
+            >
+              <p className="m-0 text-center">Entry edited successfully!</p>
             </Alert>
           </Container>
         )}
@@ -129,7 +159,11 @@ function UserHome() {
           {submenuShow && (
             <Submenu sortData={sortData} filterData={filterData} />
           )}
-          <Entries entryData={entryData} />
+          <Entries
+            entryData={entryData}
+            setEdittedEntry={setEdittedEntry}
+            onEditEntryClick={onEditEntryClick}
+          />
           <Outlet />
         </Container>
       </Container>

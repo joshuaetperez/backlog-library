@@ -3,6 +3,9 @@ const statusArray = ['Ongoing', 'Planning'];
 const priorityArray = ['High', 'Medium', 'Low'];
 const typeArray = ['Movie', 'TV', 'Anime', 'Manga', 'Game', 'Book'];
 
+// Every entries-related arrow function below MUTATE the given entries array and RETURN it
+// Use a copied array for the argument
+
 const sortEntriesByTitle = (entries) => {
   entries.sort((a, b) => {
     if (a.title.toLocaleLowerCase() < b.title.toLocaleLowerCase()) return -1;
@@ -30,10 +33,21 @@ const sortEntries = (entries, sortID) => {
   return entries;
 };
 
+const removeEntry = (entries, entryID) => {
+  for (let i = 0; i <= entries.length - 1; i++) {
+    if (entries[i].entry_id === entryID) {
+      entries.splice(i, 1);
+      break;
+    }
+  }
+  return entries;
+};
+
 module.exports = {
   categoryArray,
   statusArray,
   priorityArray,
   typeArray,
   sortEntries,
+  removeEntry,
 };

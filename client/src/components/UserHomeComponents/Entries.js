@@ -10,8 +10,13 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function EntryGrid(props) {
-  const {statusID, gridID, priorityID, entries, setEntries} = props.entryData;
+  const {statusID, gridID, priorityID, entries} = props.entryData;
   const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
+
+  const onSpanClick = (entry) => {
+    props.setEdittedEntry(entry);
+    props.onEditEntryClick();
+  };
 
   const showEntries = () => {
     return entries.map((entry) => {
@@ -31,7 +36,7 @@ function EntryGrid(props) {
             key={entry.entry_id}
           >
             <Col xs={6} md={8}>
-              {entry.title}
+              <span onClick={() => onSpanClick(entry)}>{entry.title}</span>
             </Col>
             <Col xs={3} md={2}>
               {priorityArray[entry.priority_id - 1]}
@@ -67,8 +72,16 @@ function EntryGrid(props) {
 function Entries(props) {
   return (
     <Container className="p-0">
-      <EntryGrid entryData={{...props.entryData, gridID: 1}} />
-      <EntryGrid entryData={{...props.entryData, gridID: 2}} />
+      <EntryGrid
+        entryData={{...props.entryData, gridID: 1}}
+        setEdittedEntry={props.setEdittedEntry}
+        onEditEntryClick={props.onEditEntryClick}
+      />
+      <EntryGrid
+        entryData={{...props.entryData, gridID: 2}}
+        setEdittedEntry={props.setEdittedEntry}
+        onEditEntryClick={props.onEditEntryClick}
+      />
     </Container>
   );
 }

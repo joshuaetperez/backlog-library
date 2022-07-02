@@ -1,52 +1,32 @@
 import {useState} from 'react';
-import {useLocation} from 'react-router-dom';
+import {removeEntry} from './entry_helpers';
+import {
+  createDefaultErrorState,
+  createErrorState,
+  errorMessages,
+} from './modal_helpers';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-import {categoryArray} from './entry_helpers';
 
-function createDefaultErrorState() {
-  return {
-    titleLengthError: null,
-    titleExistsError: null,
-    categoryInvalidError: null,
-    statusInvalidError: null,
-    priorityInvalidError: null,
-    notesLengthError: null,
-  };
-}
-
-const errorMessages = {
-  titleLengthErrorMessage: 'Title must contain between 1 and 100 characters',
-  titleExistsErrorMessage:
-    'Title already exists in this category with this user',
-  categoryInvalidErrorMessage: 'Category is invalid',
-  statusInvalidErrorMessage: 'Status is invalid',
-  priorityInvalidErrorMessage: 'Priority is invalid',
-  notesLengthErrorMessage: 'Notes cannot be more than 1000 characters',
-};
-
-function EntryForm(props) {
-  const [title, setTitle] = useState('');
-  const [categoryID, setCategoryID] = useState(
-    categoryArray.indexOf(useLocation().pathname.substring(1))
-  );
-  const [statusID, setStatusID] = useState(props.modalData.statusID);
-  const [priorityID, setPriorityID] = useState(props.modalData.priorityID);
-  const [notes, setNotes] = useState('');
+function EditEntryForm(props) {
+  const edittedEntry = props.editModalData.edittedEntry;
+  const entryID = edittedEntry.entry_id;
+  const [title, setTitle] = useState(edittedEntry.title);
+  const [categoryID, setCategoryID] = useState(edittedEntry.category_id);
+  const [statusID, setStatusID] = useState(edittedEntry.status_id);
+  const [priorityID, setPriorityID] = useState(edittedEntry.priority_id);
+  const [notes, setNotes] = useState(edittedEntry.notes);
 
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
 
-    // TODO: Change method to POST/PUT depending on Add/Edit
-
     // Server-side validation
-    const errorState = createDefaultErrorState();
     try {
-      const body = {categoryID, statusID, priorityID, title, notes};
-      const response = await fetch('http://localhost:5000/add_entry', {
+      const body = {entryID, categoryID, statusID, priorityID, title, notes};
+      const response = await fetch('http://localhost:5000/edit_entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
@@ -57,32 +37,15 @@ function EntryForm(props) {
 
       // If there is at least one of the following errors, display error messages on the form
       if (errorArray !== undefined) {
-        for (const error of errorArray) {
-          switch (error.msg) {
-            case errorMessages.titleLengthErrorMessage:
-              errorState.titleLengthError = true;
-              break;
-            case errorMessages.titleExistsErrorMessage:
-              errorState.titleExistsError = true;
-              break;
-            case errorMessages.categoryInvalidErrorMessage:
-              errorState.categoryInvalidError = true;
-              break;
-            case errorMessages.statusInvalidErrorMessage:
-              errorState.statusInvalidError = true;
-              break;
-            case errorMessages.priorityInvalidErrorMessage:
-              errorState.priorityInvalidError = true;
-              break;
-            case errorMessages.notesLengthErrorMessage:
-              errorState.notesLengthError = true;
-              break;
-            default:
-              break;
-          }
-        }
+        const errorState = createErrorState(errorArray);
         setErrorObj(errorState);
       } else {
+        const edittedEntries = removeEntry(
+          [...props.editModalData.entries],
+          edittedEntry.entry_id
+        );
+        props.editModalData.setEntries([...edittedEntries, jsonData]);
+        props.editModalData.setTimeToSort(true);
         props.onHide();
         props.onSetShowAlert(true);
       }
@@ -91,8 +54,18 @@ function EntryForm(props) {
     }
   };
 
+  const showErrorMessage = (error, errorMessage) => {
+    if (errorObj[error] === null) return null;
+    return (
+      <Form.Text className="form-error fs-6">
+        <span className="material-icons">error</span>
+        {errorMessages[errorMessage]}
+      </Form.Text>
+    );
+  };
+
   return (
-    <Form onSubmit={onSubmitForm} id="entry-form">
+    <Form onSubmit={onSubmitForm} id="edit-entry-form">
       <Form.Group className="mb-3" controlId="title">
         <Form.Label>Title</Form.Label>
         <Form.Control
@@ -105,12 +78,7 @@ function EntryForm(props) {
           autoFocus
           required
         />
-        {errorObj['titleExistsError'] !== null && (
-          <Form.Text className="form-error fs-6">
-            <span className="material-icons">error</span>
-            {errorMessages.titleExistsErrorMessage}
-          </Form.Text>
-        )}
+        {showErrorMessage('titleExistsError', 'titleExistsErrorMessage')}
       </Form.Group>
       <Form.Group className="mb-3" controlId="category">
         <Form.Label>Category</Form.Label>
@@ -133,11 +101,9 @@ function EntryForm(props) {
           <option value="5">Games</option>
           <option value="6">Books</option>
         </Form.Select>
-        {errorObj['categoryInvalidError'] !== null && (
-          <Form.Text className="form-error fs-6">
-            <span className="material-icons">error</span>
-            {errorMessages.categoryInvalidErrorMessage}
-          </Form.Text>
+        {showErrorMessage(
+          'categoryInvalidError',
+          'categoryInvalidErrorMessage'
         )}
       </Form.Group>
       <Form.Group className="mb-3" controlId="status">
@@ -157,12 +123,7 @@ function EntryForm(props) {
           <option value="1">Ongoing</option>
           <option value="2">Planning</option>
         </Form.Select>
-        {errorObj['statusInvalidError'] !== null && (
-          <Form.Text className="form-error fs-6">
-            <span className="material-icons">error</span>
-            {errorMessages.statusInvalidErrorMessage}
-          </Form.Text>
-        )}
+        {showErrorMessage('statusInvalidError', 'statusInvalidErrorMessage')}
       </Form.Group>
       <Form.Group className="mb-3" controlId="priority">
         <Form.Label>Priority</Form.Label>
@@ -182,11 +143,9 @@ function EntryForm(props) {
           <option value="2">Medium</option>
           <option value="3">Low</option>
         </Form.Select>
-        {errorObj['priorityInvalidError'] !== null && (
-          <Form.Text className="form-error fs-6">
-            <span className="material-icons">error</span>
-            {errorMessages.priorityInvalidErrorMessage}
-          </Form.Text>
+        {showErrorMessage(
+          'priorityInvalidError',
+          'priorityInvalidErrorMessage'
         )}
       </Form.Group>
       <Form.Group className="mb-3" controlId="notes">
@@ -201,45 +160,40 @@ function EntryForm(props) {
           maxLength="1000"
           rows={3}
         />
-        {errorObj['notesLengthError'] !== null && (
-          <Form.Text className="form-error fs-6">
-            <span className="material-icons">error</span>
-            {errorMessages.notesLengthErrorMessage}
-          </Form.Text>
-        )}
+        {showErrorMessage('notesLengthError', 'notesLengthErrorMessage')}
       </Form.Group>
     </Form>
   );
 }
 
-function EntryModal(props) {
+function EditEntryModal(props) {
   return (
     <Modal
       show={props.show}
       onHide={props.onHide}
-      aria-labelledby="entry-modal"
+      aria-labelledby="edit-entry-modal"
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="entry-modal">Add Entry</Modal.Title>
+        <Modal.Title id="edit-entry-modal">Edit Entry</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <EntryForm
+        <EditEntryForm
           onHide={props.onHide}
           onSetShowAlert={props.onSetShowAlert}
-          modalData={props.modalData}
+          editModalData={props.editModalData}
         />
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" variant="secondary" onClick={props.onHide}>
-          Close
+          Delete
         </Button>
-        <Button type="submit" variant="primary" form="entry-form">
-          Submit
+        <Button type="submit" variant="primary" form="edit-entry-form">
+          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
   );
 }
 
-export default EntryModal;
+export default EditEntryModal;

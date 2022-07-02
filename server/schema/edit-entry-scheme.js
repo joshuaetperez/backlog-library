@@ -1,7 +1,7 @@
 const {body} = require('express-validator');
-const {getUserByID, checkTitleInUse} = require('../helpers');
+const {getUserByID, checkEdittedTitleInUse} = require('../helpers');
 
-const addEntrySchema = [
+const editEntrySchema = [
   body('title')
     .exists()
     .isLength({min: 1, max: 100})
@@ -11,15 +11,24 @@ const addEntrySchema = [
       if (user === null) {
         throw new Error('Unknown user');
       }
-      const isTitleInUse = await checkTitleInUse(
+      const isEdittedTitleInUse = await checkEdittedTitleInUse(
         value,
         req.body.categoryID,
-        req.user.userID
+        req.user.userID,
+        req.body.entryID
       );
-      if (isTitleInUse === null) {
+      if (isEdittedTitleInUse === null) {
         throw new Error('Category is invalid so title cannot be checked');
-      } else if (isTitleInUse) {
+      } else if (isEdittedTitleInUse) {
         throw new Error('Title already exists in this category');
+      }
+      return true;
+    }),
+  body('entryID')
+    .exists()
+    .custom((value, {req}) => {
+      if (!(value >= 1)) {
+        throw new Error('EntryID is invalid');
       }
       return true;
     }),
@@ -53,4 +62,4 @@ const addEntrySchema = [
     .withMessage('Notes cannot be more than 1000 characters'),
 ];
 
-module.exports = addEntrySchema;
+module.exports = editEntrySchema;
