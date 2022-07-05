@@ -37,6 +37,18 @@ select:valid {
   z-index: 3;
 }
 
+.entry-div:hover {
+  background-color: #f8f9fa;
+}
+
+.entry-div:hover div > .entry-title {
+  color: #3b82f6;
+}
+
+.entry-title:hover {
+  cursor: pointer;
+}
+
 @media (min-width: 576px) {
   .card-height {
     height: 30rem;

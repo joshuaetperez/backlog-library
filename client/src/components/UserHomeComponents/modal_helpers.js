@@ -40,8 +40,7 @@ const createErrorState = (errorArray) => {
 
 const errorMessages = {
   titleLengthErrorMessage: 'Title must contain between 1 and 100 characters',
-  titleExistsErrorMessage:
-    'Title already exists in this category with this user',
+  titleExistsErrorMessage: 'Title already exists in this category',
   categoryInvalidErrorMessage: 'Category is invalid',
   statusInvalidErrorMessage: 'Status is invalid',
   priorityInvalidErrorMessage: 'Priority is invalid',

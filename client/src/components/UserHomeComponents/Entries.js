@@ -32,11 +32,13 @@ function EntryGrid(props) {
         priorityCondition &&
         categoryCondition && (
           <Row
-            className="px-3 py-2 border border-bottom-0"
+            className="entry-div px-3 py-2 border border-bottom-0"
             key={entry.entry_id}
           >
             <Col xs={6} md={8}>
-              <span onClick={() => onSpanClick(entry)}>{entry.title}</span>
+              <span className="entry-title" onClick={() => onSpanClick(entry)}>
+                {entry.title}
+              </span>
             </Col>
             <Col xs={3} md={2}>
               {priorityArray[entry.priority_id - 1]}
