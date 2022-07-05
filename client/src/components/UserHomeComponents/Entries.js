@@ -13,9 +13,9 @@ function EntryGrid(props) {
   const {statusID, gridID, priorityID, entries} = props.entryData;
   const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
 
-  const onSpanClick = (entry) => {
-    props.setEdittedEntry(entry);
-    props.onEditEntryClick();
+  const onTitleClick = (entry) => {
+    props.setEditedEntry(entry);
+    props.showModal();
   };
 
   const showEntries = () => {
@@ -36,7 +36,7 @@ function EntryGrid(props) {
             key={entry.entry_id}
           >
             <Col xs={6} md={8}>
-              <span className="entry-title" onClick={() => onSpanClick(entry)}>
+              <span className="entry-title" onClick={() => onTitleClick(entry)}>
                 {entry.title}
               </span>
             </Col>
@@ -76,13 +76,13 @@ function Entries(props) {
     <Container className="p-0">
       <EntryGrid
         entryData={{...props.entryData, gridID: 1}}
-        setEdittedEntry={props.setEdittedEntry}
-        onEditEntryClick={props.onEditEntryClick}
+        setEditedEntry={props.setEditedEntry}
+        showModal={props.showModal}
       />
       <EntryGrid
         entryData={{...props.entryData, gridID: 2}}
-        setEdittedEntry={props.setEdittedEntry}
-        onEditEntryClick={props.onEditEntryClick}
+        setEditedEntry={props.setEditedEntry}
+        showModal={props.showModal}
       />
     </Container>
   );

@@ -10,13 +10,13 @@ import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
 function EditEntryForm(props) {
-  const edittedEntry = props.editModalData.edittedEntry;
-  const entryID = edittedEntry.entry_id;
-  const [title, setTitle] = useState(edittedEntry.title);
-  const [categoryID, setCategoryID] = useState(edittedEntry.category_id);
-  const [statusID, setStatusID] = useState(edittedEntry.status_id);
-  const [priorityID, setPriorityID] = useState(edittedEntry.priority_id);
-  const [notes, setNotes] = useState(edittedEntry.notes);
+  const editedEntry = props.modalData.editedEntry;
+  const entryID = editedEntry.entry_id;
+  const [title, setTitle] = useState(editedEntry.title);
+  const [categoryID, setCategoryID] = useState(editedEntry.category_id);
+  const [statusID, setStatusID] = useState(editedEntry.status_id);
+  const [priorityID, setPriorityID] = useState(editedEntry.priority_id);
+  const [notes, setNotes] = useState(editedEntry.notes);
 
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
 
@@ -40,14 +40,14 @@ function EditEntryForm(props) {
         const errorState = createErrorState(errorArray);
         setErrorObj(errorState);
       } else {
-        const edittedEntries = removeEntry(
-          [...props.editModalData.entries],
-          edittedEntry.entry_id
+        const editedEntries = removeEntry(
+          [...props.modalData.entries],
+          editedEntry.entry_id
         );
-        props.editModalData.setEntries([...edittedEntries, jsonData]);
-        props.editModalData.setTimeToSort(true);
+        props.modalData.setEntries([...editedEntries, jsonData]);
+        props.modalData.setTimeToSort(true);
         props.onHide();
-        props.onSetShowAlert(true);
+        props.showAlert();
       }
     } catch (err) {
       console.error(err.message);
@@ -180,12 +180,16 @@ function EditEntryModal(props) {
       <Modal.Body>
         <EditEntryForm
           onHide={props.onHide}
-          onSetShowAlert={props.onSetShowAlert}
-          editModalData={props.editModalData}
+          showAlert={props.showAlert}
+          modalData={props.modalData}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" variant="secondary" onClick={props.onHide}>
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={props.showDeleteModal}
+        >
           Delete
         </Button>
         <Button type="submit" variant="primary" form="edit-entry-form">

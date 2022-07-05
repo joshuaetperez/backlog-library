@@ -9,6 +9,7 @@ import {sortEntries} from './entry_helpers';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import DeleteEntryModal from './DeleteEntryModal';
 
 function UserHome() {
   // Loading state (need to fetch user entries first)
@@ -16,7 +17,7 @@ function UserHome() {
 
   // User entries
   const [entries, setEntries] = useState([]);
-  const [edittedEntry, setEdittedEntry] = useState(null);
+  const [editedEntry, setEditedEntry] = useState(null);
   useEffect(() => {
     async function getEntries() {
       try {
@@ -39,13 +40,12 @@ function UserHome() {
   // Submenu
   const [submenuShow, setSubmenuShow] = useState(false);
 
-  // Modals
-  const [addEntryModalShow, setAddEntryModalShow] = useState(false);
-  const [editEntryModalShow, setEditEntryModalShow] = useState(false);
+  // Modal
+  const [modal, setModal] = useState(null);
 
   // Sort and filters
   const [timeToSort, setTimeToSort] = useState(true);
-  const [sortID, setSortID] = useState(2);
+  const [sortID, setSortID] = useState(2); // Default option 2 sorts by entries priority
   const [statusID, setStatusID] = useState(0);
   const [priorityID, setPriorityID] = useState(0);
   useEffect(() => {
@@ -57,15 +57,19 @@ function UserHome() {
   }, [entries, timeToSort, sortID]);
 
   // Alerts
-  const [showAddAlert, setShowAddAlert] = useState(false);
-  const [showEditAlert, setShowEditAlert] = useState(false);
+  const [alert, setAlert] = useState(null);
+  const alertWord = () => {
+    if (alert === 'Add') return 'added';
+    else if (alert === 'Edit') return 'edited';
+    else if (alert === 'Delete') return 'deleted';
+    return null;
+  };
   useEffect(() => {
-    if (showAddAlert) {
-      setTimeout(() => setShowAddAlert(false), 3000);
-    } else if (showEditAlert) {
-      setTimeout(() => setShowEditAlert(false), 3000);
+    const alertStates = ['Add', 'Edit', 'Delete'];
+    if (alertStates.includes(alert)) {
+      setTimeout(() => setAlert(null), 3000);
     }
-  }, [showAddAlert, showEditAlert]);
+  }, [alert]);
 
   // Organizing props
   const sortData = {sortID, setTimeToSort, setSortID};
@@ -77,58 +81,45 @@ function UserHome() {
     setEntries,
     setTimeToSort,
   };
-  const editModalData = {
+  const modalData = {
     entries,
-    edittedEntry,
+    editedEntry,
     setEntries,
     setTimeToSort,
-  };
-
-  const onAddEntryButtonClick = () => {
-    setAddEntryModalShow(true);
-  };
-
-  const onEditEntryClick = () => {
-    setEditEntryModalShow(true);
   };
 
   return (
     <>
       <AddEntryModal
-        show={addEntryModalShow}
-        onHide={() => setAddEntryModalShow(false)}
-        onSetShowAlert={setShowAddAlert}
+        show={modal === 'Add'}
+        onHide={() => setModal(null)}
+        showAlert={() => setAlert('Add')}
         entryData={entryData}
       />
       <EditEntryModal
-        show={editEntryModalShow}
-        onHide={() => setEditEntryModalShow(false)}
-        onSetShowAlert={setShowEditAlert}
-        editModalData={editModalData}
+        show={modal === 'Edit'}
+        onHide={() => setModal(null)}
+        showDeleteModal={() => setModal('Delete')}
+        showAlert={() => setAlert('Edit')}
+        modalData={modalData}
+      />
+      <DeleteEntryModal
+        show={modal === 'Delete'}
+        onHide={() => setModal(null)}
+        onCancel={() => setModal('Edit')}
+        showAlert={() => setAlert('Delete')}
+        modalData={modalData}
       />
       <Container
         fluid
         className="bg-light position-relative py-3 d-flex flex-column flex-grow-1"
       >
-        {showAddAlert && (
+        {alert !== null && (
           <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
-            <Alert
-              variant="success"
-              onClose={() => setShowAddAlert(false)}
-              dismissible
-            >
-              <p className="m-0 text-center">Entry added successfully!</p>
-            </Alert>
-          </Container>
-        )}
-        {showEditAlert && (
-          <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
-            <Alert
-              variant="success"
-              onClose={() => setShowEditAlert(false)}
-              dismissible
-            >
-              <p className="m-0 text-center">Entry edited successfully!</p>
+            <Alert variant="success" onClose={() => setAlert(null)} dismissible>
+              <p className="m-0 text-center">
+                Entry {alertWord()} successfully!
+              </p>
             </Alert>
           </Container>
         )}
@@ -140,7 +131,7 @@ function UserHome() {
               <CategoryListGroup />
               <div className="d-grid gap-2 col-10 my-3 mx-auto">
                 {/* Add Entry Button */}
-                <Button variant="success" onClick={onAddEntryButtonClick}>
+                <Button variant="success" onClick={() => setModal('Add')}>
                   Add Entry
                 </Button>
               </div>
@@ -161,8 +152,8 @@ function UserHome() {
           )}
           <Entries
             entryData={entryData}
-            setEdittedEntry={setEdittedEntry}
-            onEditEntryClick={onEditEntryClick}
+            setEditedEntry={setEditedEntry}
+            showModal={() => setModal('Edit')}
           />
           <Outlet />
         </Container>

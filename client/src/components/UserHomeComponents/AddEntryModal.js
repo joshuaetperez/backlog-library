@@ -45,7 +45,7 @@ function AddEntryForm(props) {
         entryData.setEntries([...entryData.entries, jsonData]);
         entryData.setTimeToSort(true);
         props.onHide();
-        props.onSetShowAlert(true);
+        props.showAlert();
       }
     } catch (err) {
       console.error(err.message);
@@ -178,7 +178,7 @@ function AddEntryModal(props) {
       <Modal.Body>
         <AddEntryForm
           onHide={props.onHide}
-          onSetShowAlert={props.onSetShowAlert}
+          showAlert={props.showAlert}
           entryData={props.entryData}
         />
       </Modal.Body>

@@ -35,11 +35,11 @@ modalEntryRouter.post(
     try {
       const {entryID, categoryID, statusID, priorityID, title, notes} =
         req.body;
-      const edittedEntry = await pool.query(
+      const editedEntry = await pool.query(
         `UPDATE entries SET (category_id, status_id, priority_id, title, notes) = ($1, $2, $3, $4, $5) WHERE entry_id = $6 RETURNING *`,
         [categoryID, statusID, priorityID, title, notes, entryID]
       );
-      res.json(edittedEntry.rows[0]);
+      res.json(editedEntry.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -48,8 +48,24 @@ modalEntryRouter.post(
 
 // Fetches all entries belonging to the user and sends it to the client
 modalEntryRouter.get('/get_entries', async (req, res) => {
-  const entries = await getEntries(req.user.userID);
-  res.send(entries);
+  try {
+    const entries = await getEntries(req.user.userID);
+    res.send(entries);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Deletes an entry with the given entry_id
+modalEntryRouter.delete('/delete_entry/:id', async (req, res) => {
+  try {
+    await pool.query('DELETE FROM entries WHERE entry_id = $1', [
+      req.params.id,
+    ]);
+    res.send('Entry deleted successfully');
+  } catch (err) {
+    console.error(err.message);
+  }
 });
 
 module.exports = modalEntryRouter;

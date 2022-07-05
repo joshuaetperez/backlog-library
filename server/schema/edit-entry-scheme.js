@@ -1,5 +1,5 @@
 const {body} = require('express-validator');
-const {getUserByID, checkEdittedTitleInUse} = require('../helpers');
+const {getUserByID, checkEditedTitleInUse} = require('../helpers');
 
 const editEntrySchema = [
   body('title')
@@ -11,15 +11,15 @@ const editEntrySchema = [
       if (user === null) {
         throw new Error('Unknown user');
       }
-      const isEdittedTitleInUse = await checkEdittedTitleInUse(
+      const isEditedTitleInUse = await checkEditedTitleInUse(
         value,
         req.body.categoryID,
         req.user.userID,
         req.body.entryID
       );
-      if (isEdittedTitleInUse === null) {
+      if (isEditedTitleInUse === null) {
         throw new Error('Category is invalid so title cannot be checked');
-      } else if (isEdittedTitleInUse) {
+      } else if (isEditedTitleInUse) {
         throw new Error('Title already exists in this category');
       }
       return true;

@@ -79,7 +79,7 @@ async function checkTitleInUse(title, category_id, user_id) {
 }
 
 // Returns true if the given title, category_id, and user_id combination already exists AND the given entry_id is DIFFERENT from the entry that contains the combination, false otherwise
-async function checkEdittedTitleInUse(title, category_id, user_id, entry_id) {
+async function checkEditedTitleInUse(title, category_id, user_id, entry_id) {
   if (!(category_id >= 1 && category_id <= 6)) return null;
   try {
     const response = await pool.query(
@@ -98,8 +98,8 @@ async function checkEdittedTitleInUse(title, category_id, user_id, entry_id) {
 module.exports = {
   getUserByEmail,
   getUserByID,
+  getEntries,
   checkEmailInUse,
   checkTitleInUse,
-  checkEdittedTitleInUse,
-  getEntries,
+  checkEditedTitleInUse,
 };
