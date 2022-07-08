@@ -49,6 +49,10 @@ select:valid {
   cursor: pointer;
 }
 
+.tooltip-arrow {
+  display: none !important;
+}
+
 @media (min-width: 576px) {
   .card-height {
     height: 30rem;

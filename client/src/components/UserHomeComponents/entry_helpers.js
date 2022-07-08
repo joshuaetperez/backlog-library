@@ -3,8 +3,9 @@ const statusArray = ['Ongoing', 'Planning'];
 const priorityArray = ['High', 'Medium', 'Low'];
 const typeArray = ['Movie', 'TV', 'Anime', 'Manga', 'Game', 'Book'];
 
-// Every entries-related arrow function below MUTATE the given entries array and RETURN it
-// Use a copied array for the argument
+/* ---------------------------------------------------------------- */
+/* Every entry-related arrow function below MUTATE the given entries array and RETURN it. Use a copied array for the argument. */
+/* ---------------------------------------------------------------- */
 
 // Sorts by title, then type
 const sortEntriesByTitle = (entries) => {
@@ -33,6 +34,7 @@ const sortEntriesByType = (entries) => {
   );
 };
 
+// Sorts entries based on given sorting method
 const sortEntries = (entries, sortID) => {
   if (sortID === 1) {
     sortEntriesByTitle(entries);
@@ -44,6 +46,7 @@ const sortEntries = (entries, sortID) => {
   return entries;
 };
 
+// Removes entry with corresponding entry_id
 const removeEntry = (entries, entryID) => {
   for (let i = 0; i <= entries.length - 1; i++) {
     if (entries[i].entry_id === entryID) {
@@ -54,6 +57,30 @@ const removeEntry = (entries, entryID) => {
   return entries;
 };
 
+/* ---------------------------------------------------------------- */
+/* Every entry-related arrow function below does NOT mutate the given entries array. */
+/* ---------------------------------------------------------------- */
+
+// Returns a random entry taking filters into account (if any)
+// filterObj: {categoryID, statusID, priorityID}
+const getRandomEntry = (prevRandomEntry, entries, filterObj) => {
+  const {categoryID, statusID, priorityID} = filterObj;
+  let filteredEntries = entries.filter(
+    (entry) =>
+      (categoryID === 0 || entry.category_id === categoryID) &&
+      (statusID === 0 || entry.status_id === statusID) &&
+      (priorityID === 0 || entry.priority_id === priorityID)
+  );
+
+  // If possible, return a random entry that is different from the previous entry
+  if (prevRandomEntry !== null && filteredEntries.length > 1) {
+    filteredEntries = removeEntry(filteredEntries, prevRandomEntry.entry_id);
+  }
+  const randomEntry =
+    filteredEntries[Math.floor(Math.random() * filteredEntries.length)];
+  return randomEntry;
+};
+
 module.exports = {
   categoryArray,
   statusArray,
@@ -61,4 +88,5 @@ module.exports = {
   typeArray,
   sortEntries,
   removeEntry,
+  getRandomEntry,
 };

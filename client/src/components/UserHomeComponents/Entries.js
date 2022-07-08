@@ -9,14 +9,58 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
+function EntryRow(props) {
+  const entry = props.entry;
+
+  const onTitleClick = (clickedEntry) => {
+    props.setEditedEntry(clickedEntry);
+    props.showModal();
+  };
+
+  return (
+    <Row className="entry-div px-3 py-2 border border-bottom-0">
+      <Col xs={6} md={8}>
+        <span className="entry-title" onClick={() => onTitleClick(entry)}>
+          {entry.title}
+        </span>
+      </Col>
+      <Col xs={3} md={2}>
+        {priorityArray[entry.priority_id - 1]}
+      </Col>
+      <Col>{typeArray[entry.category_id - 1]}</Col>
+    </Row>
+  );
+}
+
+function RandomEntryRow(props) {
+  const entry = props.entry;
+
+  return (
+    <Container className="px-0 py-3">
+      <Container className="bg-white fs-5 border-bottom">
+        <Row className="px-3 py-2 fw-bold">
+          <Col xs={6} md={8}>
+            Title
+          </Col>
+          <Col xs={3} md={2}>
+            Priority
+          </Col>
+          <Col>Type</Col>
+        </Row>
+        <EntryRow
+          key={0}
+          entry={entry}
+          setEditedEntry={props.setEditedEntry}
+          showModal={props.showModal}
+        />
+      </Container>
+    </Container>
+  );
+}
+
 function EntryGrid(props) {
   const {statusID, gridID, priorityID, entries} = props.entryData;
   const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
-
-  const onTitleClick = (entry) => {
-    props.setEditedEntry(entry);
-    props.showModal();
-  };
 
   const showEntries = () => {
     return entries.map((entry) => {
@@ -31,20 +75,12 @@ function EntryGrid(props) {
         statusCondition &&
         priorityCondition &&
         categoryCondition && (
-          <Row
-            className="entry-div px-3 py-2 border border-bottom-0"
+          <EntryRow
             key={entry.entry_id}
-          >
-            <Col xs={6} md={8}>
-              <span className="entry-title" onClick={() => onTitleClick(entry)}>
-                {entry.title}
-              </span>
-            </Col>
-            <Col xs={3} md={2}>
-              {priorityArray[entry.priority_id - 1]}
-            </Col>
-            <Col>{typeArray[entry.category_id - 1]}</Col>
-          </Row>
+            entry={entry}
+            setEditedEntry={props.setEditedEntry}
+            showModal={props.showModal}
+          />
         )
       );
     });
@@ -88,4 +124,5 @@ function Entries(props) {
   );
 }
 
+export {RandomEntryRow};
 export default Entries;

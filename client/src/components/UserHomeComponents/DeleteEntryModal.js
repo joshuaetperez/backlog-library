@@ -9,15 +9,17 @@ function DeleteEntryModal(props) {
   const onConfirmation = async () => {
     const entryID = props.modalData.editedEntry.entry_id;
     try {
-      const response = await fetch(
-        'http://localhost:5000/delete_entry/' + entryID,
-        {
-          method: 'DELETE',
-          headers: {'Content-Type': 'application/json'},
-          credentials: 'include',
-        }
-      );
-      console.log(response);
+      await fetch('http://localhost:5000/delete_entry/' + entryID, {
+        method: 'DELETE',
+        headers: {'Content-Type': 'application/json'},
+        credentials: 'include',
+      });
+      // If the random entry is being edited, update changes
+      const randomEntry = props.modalData.randomEntry;
+      if (randomEntry !== null && randomEntry.entry_id === entryID) {
+        props.modalData.setRandomEntry(null);
+      }
+
       const editedEntries = removeEntry([...props.modalData.entries], entryID);
       props.modalData.setEntries(editedEntries);
       props.modalData.setTimeToSort(true);

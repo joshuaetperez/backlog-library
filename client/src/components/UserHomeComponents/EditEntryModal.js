@@ -40,6 +40,12 @@ function EditEntryForm(props) {
         const errorState = createErrorState(errorArray);
         setErrorObj(errorState);
       } else {
+        // If the random entry is being edited, update changes
+        const randomEntry = props.modalData.randomEntry;
+        if (randomEntry !== null && randomEntry.entry_id === entryID) {
+          props.modalData.setRandomEntry(jsonData);
+        }
+
         const editedEntries = removeEntry(
           [...props.modalData.entries],
           editedEntry.entry_id

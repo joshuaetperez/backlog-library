@@ -1,14 +1,51 @@
+import {useLocation} from 'react-router-dom';
+import {categoryArray} from './entry_helpers';
+import {getRandomEntry} from './entry_helpers';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import {RandomEntryRow} from './Entries';
+import {useEffect} from 'react';
 
 function Submenu(props) {
   const {sortID, setTimeToSort, setSortID} = props.sortData;
-  const {statusID, priorityID, setStatusID, setPriorityID} = props.filterData;
+  const {
+    entries,
+    statusID,
+    priorityID,
+    setStatusID,
+    setPriorityID,
+    setEditedEntry,
+    showModal,
+  } = props.filterData;
+  const {randomEntry, setRandomEntry} = props.randomEntryData;
+  const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
+
+  // Handles random entry when category or filter options are changed
+  useEffect(() => {
+    if (randomEntry === null) return;
+    if (
+      (categoryID !== 0 && randomEntry.category_id !== categoryID) ||
+      (statusID !== 0 && randomEntry.status_id !== statusID) ||
+      (priorityID !== 0 && randomEntry.priority_id !== priorityID)
+    ) {
+      setRandomEntry(null);
+    }
+  }, [statusID, priorityID, randomEntry, categoryID, setRandomEntry]);
 
   const onResetFilterButtonClick = () => {
     setStatusID(0);
     setPriorityID(0);
+  };
+
+  const onRandomButtonClick = () => {
+    const filterObj = {categoryID, statusID, priorityID};
+    const newRandomEntry = getRandomEntry(randomEntry, entries, filterObj);
+    newRandomEntry !== undefined
+      ? setRandomEntry(newRandomEntry)
+      : setRandomEntry(null);
   };
 
   return (
@@ -78,12 +115,32 @@ function Submenu(props) {
       {/* Random Entry */}
       <div className="mb-3">
         <h5 className="text-muted">Random</h5>
-        <p className="mb-2">
-          Randomizer takes current category and filters (if any) into account
-        </p>
-        <Button type="button" variant="info" className="d-flex">
-          <span className="material-icons">shuffle</span>
-        </Button>
+        <OverlayTrigger
+          placement="right"
+          overlay={
+            <Tooltip id="random-tooltip">
+              Randomizer takes current category and filters (if any) into
+              account
+            </Tooltip>
+          }
+        >
+          <Button
+            type="button"
+            variant="info"
+            onClick={onRandomButtonClick}
+            className="d-flex"
+          >
+            <span className="material-icons">shuffle</span>
+          </Button>
+        </OverlayTrigger>
+        {randomEntry !== null && (
+          <RandomEntryRow
+            key={0}
+            entry={randomEntry}
+            setEditedEntry={setEditedEntry}
+            showModal={showModal}
+          />
+        )}
       </div>
     </Container>
   );
