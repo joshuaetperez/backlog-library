@@ -1,15 +1,15 @@
 import {useEffect, useState} from 'react';
 import {Outlet} from 'react-router-dom';
-import CategoryListGroup from './CategoryListGroup';
-import AddEntryModal from './AddEntryModal';
-import EditEntryModal from './EditEntryModal';
+import CategoryListGroup from './Category/CategoryListGroup';
+import AddEntryModal from './Modals/AddEntryModal';
+import EditEntryModal from './Modals/EditEntryModal';
+import DeleteEntryModal from './Modals/DeleteEntryModal';
+import {sortEntries} from './Entries/entry_helpers';
 import Submenu from './Submenu';
-import Entries from './Entries';
-import {sortEntries} from './entry_helpers';
+import Entries from './Entries/Entries';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-import DeleteEntryModal from './DeleteEntryModal';
 
 function UserHome() {
   // Loading state (need to fetch user entries first)

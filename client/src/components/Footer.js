@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <div className="bg-info py-2 text-center bold-m">
+    <div className="bg-info py-2 text-center fw-semibold">
       <div>Backlog Library</div>
     </div>
   );

@@ -3,6 +3,8 @@ import {Link} from 'react-router-dom';
 import {myContext} from './Context';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Stack from 'react-bootstrap/Stack';
@@ -31,9 +33,31 @@ function Header() {
         {isUserLoggedIn !== undefined && (
           <Stack direction="horizontal" gap={2} className="text-nowrap">
             {isUserLoggedIn ? (
-              <Button type="button" variant="secondary" onClick={onLogOut}>
-                Logout
-              </Button>
+              <>
+                {/* <Button type="button" className="d-flex px-2">
+                  <span className="material-icons">account_circle</span>
+                </Button>
+                <Button type="button" variant="secondary" onClick={onLogOut}>
+                  Logout
+                </Button> */}
+                <DropdownButton
+                  variant="primary"
+                  title={
+                    <span className="material-icons md-28">account_box</span>
+                  }
+                  align="end"
+                >
+                  <Dropdown.Item as={Link} to="/settings">
+                    <span className="material-icons md-22">settings</span>
+                    Settings
+                  </Dropdown.Item>
+                  <Dropdown.Divider />
+                  <Dropdown.Item as={Button} onClick={onLogOut}>
+                    <span className="material-icons md-22">logout</span>
+                    Logout
+                  </Dropdown.Item>
+                </DropdownButton>
+              </>
             ) : (
               <>
                 <Nav.Link as={Link} to="/login">

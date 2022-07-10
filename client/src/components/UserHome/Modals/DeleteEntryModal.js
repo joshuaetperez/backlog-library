@@ -1,5 +1,5 @@
 import {useState} from 'react';
-import {removeEntry} from './entry_helpers';
+import {removeEntry} from '../Entries/entry_helpers';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 

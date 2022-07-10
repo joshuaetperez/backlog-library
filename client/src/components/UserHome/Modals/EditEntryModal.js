@@ -1,6 +1,5 @@
 import {useState} from 'react';
-import {useLocation} from 'react-router-dom';
-import {categoryArray} from './entry_helpers';
+import {removeEntry} from '../Entries/entry_helpers';
 import {
   createDefaultErrorState,
   createErrorState,
@@ -10,15 +9,14 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
-function AddEntryForm(props) {
-  const entryData = props.entryData;
-  const [title, setTitle] = useState('');
-  const [categoryID, setCategoryID] = useState(
-    categoryArray.indexOf(useLocation().pathname.substring(1))
-  );
-  const [statusID, setStatusID] = useState(entryData.statusID);
-  const [priorityID, setPriorityID] = useState(entryData.priorityID);
-  const [notes, setNotes] = useState('');
+function EditEntryForm(props) {
+  const editedEntry = props.modalData.editedEntry;
+  const entryID = editedEntry.entry_id;
+  const [title, setTitle] = useState(editedEntry.title);
+  const [categoryID, setCategoryID] = useState(editedEntry.category_id);
+  const [statusID, setStatusID] = useState(editedEntry.status_id);
+  const [priorityID, setPriorityID] = useState(editedEntry.priority_id);
+  const [notes, setNotes] = useState(editedEntry.notes);
 
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
 
@@ -27,8 +25,8 @@ function AddEntryForm(props) {
 
     // Server-side validation
     try {
-      const body = {categoryID, statusID, priorityID, title, notes};
-      const response = await fetch('http://localhost:5000/add_entry', {
+      const body = {entryID, categoryID, statusID, priorityID, title, notes};
+      const response = await fetch('http://localhost:5000/edit_entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
@@ -42,8 +40,18 @@ function AddEntryForm(props) {
         const errorState = createErrorState(errorArray);
         setErrorObj(errorState);
       } else {
-        entryData.setEntries([...entryData.entries, jsonData]);
-        entryData.setTimeToSort(true);
+        // If the random entry is being edited, update changes
+        const randomEntry = props.modalData.randomEntry;
+        if (randomEntry !== null && randomEntry.entry_id === entryID) {
+          props.modalData.setRandomEntry(jsonData);
+        }
+
+        const editedEntries = removeEntry(
+          [...props.modalData.entries],
+          editedEntry.entry_id
+        );
+        props.modalData.setEntries([...editedEntries, jsonData]);
+        props.modalData.setTimeToSort(true);
         props.onHide();
         props.showAlert();
       }
@@ -63,7 +71,7 @@ function AddEntryForm(props) {
   };
 
   return (
-    <Form onSubmit={onSubmitForm} id="add-entry-form">
+    <Form onSubmit={onSubmitForm} id="edit-entry-form">
       <Form.Group className="mb-3" controlId="title">
         <Form.Label>Title</Form.Label>
         <Form.Control
@@ -164,31 +172,38 @@ function AddEntryForm(props) {
   );
 }
 
-function AddEntryModal(props) {
+function EditEntryModal(props) {
   return (
     <Modal
       show={props.show}
       onHide={props.onHide}
-      aria-labelledby="add-entry-modal"
+      aria-labelledby="edit-entry-modal"
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="add-entry-modal">Add Entry</Modal.Title>
+        <Modal.Title id="edit-entry-modal">Edit Entry</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <AddEntryForm
+        <EditEntryForm
           onHide={props.onHide}
           showAlert={props.showAlert}
-          entryData={props.entryData}
+          modalData={props.modalData}
         />
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit" variant="primary" form="add-entry-form">
-          Submit
+        <Button
+          type="button"
+          variant="secondary"
+          onClick={props.showDeleteModal}
+        >
+          Delete
+        </Button>
+        <Button type="submit" variant="primary" form="edit-entry-form">
+          Save Changes
         </Button>
       </Modal.Footer>
     </Modal>
   );
 }
 
-export default AddEntryModal;
+export default EditEntryModal;

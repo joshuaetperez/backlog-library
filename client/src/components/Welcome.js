@@ -21,7 +21,7 @@ function Welcome() {
             Backlog Library can be used to keep track of the following
             categories:
           </p>
-          <Container className="fs-4 bold-m pb-5">
+          <Container className="fs-4 fw-semibold pb-5">
             <Row className="py-1">
               <Col>Movies</Col>
               <Col>TV Shows</Col>

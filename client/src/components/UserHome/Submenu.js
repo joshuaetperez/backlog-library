@@ -1,13 +1,12 @@
+import {useEffect} from 'react';
 import {useLocation} from 'react-router-dom';
-import {categoryArray} from './entry_helpers';
-import {getRandomEntry} from './entry_helpers';
+import {RandomEntryRow} from './Entries/Entries';
+import {categoryArray, getRandomEntry} from './Entries/entry_helpers';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import {RandomEntryRow} from './Entries';
-import {useEffect} from 'react';
 
 function Submenu(props) {
   const {sortID, setTimeToSort, setSortID} = props.sortData;

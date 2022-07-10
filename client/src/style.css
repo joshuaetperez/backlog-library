@@ -8,14 +8,6 @@ body,
   min-height: 30rem;
 }
 
-.bold-m {
-  font-weight: 500;
-}
-
-.bold {
-  font-weight: 700;
-}
-
 .form-error {
   display: flex;
   color: #ff0000;
@@ -51,6 +43,27 @@ select:valid {
 
 .tooltip-arrow {
   display: none !important;
+}
+
+.dropdown-toggle {
+  display: flex;
+  align-items: center;
+  padding-left: 6px;
+  padding-right: 6px;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.material-icons.md-22 {
+  font-size: 22px;
+  color: #4b5563;
+}
+.material-icons.md-28 {
+  font-size: 28px;
 }
 
 @media (min-width: 576px) {

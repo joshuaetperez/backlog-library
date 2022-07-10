@@ -2,21 +2,22 @@ import {useContext} from 'react';
 import {BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 import {myContext} from './components/Context';
 import Welcome from './components/Welcome';
-import UserHome from './components/UserHomeComponents/UserHome';
+import UserHome from './components/UserHome/UserHome';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Login from './components/Login';
 import Signup from './components/Signup';
-import CategoryPage from './components/UserHomeComponents/CategoryPage';
+import Settings from './components/UserHome/SettingsComponents/Settings';
+import CategoryPage from './components/UserHome/Category/CategoryPage';
 import Container from 'react-bootstrap/Container';
 import './style.css';
 
 const RouteSwitch = () => {
-  const isUserLoggedIn = useContext(myContext);
+  const user = useContext(myContext);
 
-  // isUserLoggedIn is only undefined before context is updated with fetched user data
-  // In this case, display just the header (without buttons) and the footer while waiting for isUserLoggedIn to be filled with a value
-  if (isUserLoggedIn === undefined) {
+  // user is only undefined before context is updated with fetched user data
+  // In this case, display just the header (without buttons) and the footer while waiting for user to be filled with a value
+  if (user === undefined) {
     return (
       <Container fluid className="d-flex flex-column min-vh-100 p-0">
         <BrowserRouter>
@@ -32,7 +33,7 @@ const RouteSwitch = () => {
       <BrowserRouter>
         <Header />
         <Routes>
-          {isUserLoggedIn ? (
+          {user ? (
             <>
               <Route path="/" element={<UserHome />}>
                 <Route path="movies" element={<CategoryPage />} />
@@ -44,6 +45,7 @@ const RouteSwitch = () => {
               </Route>
               <Route path="login" element={<Navigate to="/" />} />
               <Route path="signup" element={<Navigate to="/" />} />
+              <Route path="settings" element={<Settings />} />
             </>
           ) : (
             <>
@@ -56,6 +58,7 @@ const RouteSwitch = () => {
               <Route path="books" element={<Navigate to="/" />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
+              <Route path="settings" element={<Navigate to="/" />} />
             </>
           )}
         </Routes>
