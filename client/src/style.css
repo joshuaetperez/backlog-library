@@ -71,3 +71,9 @@ select:valid {
     height: 30rem;
   }
 }
+
+@media (max-width: 767px) {
+  .title-bold {
+    font-weight: 600;
+  }
+}

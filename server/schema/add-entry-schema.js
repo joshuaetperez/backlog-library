@@ -4,7 +4,7 @@ const {getUserByID, checkTitleInUse} = require('../helpers');
 const addEntrySchema = [
   body('title')
     .exists()
-    .isLength({min: 1, max: 100})
+    .isLength({min: 1, max: 200})
     .withMessage('Title must contain between 1 and 100 characters')
     .custom(async (value, {req}) => {
       const user = await getUserByID(req.user.userID);

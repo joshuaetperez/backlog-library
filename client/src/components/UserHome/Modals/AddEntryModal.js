@@ -27,7 +27,13 @@ function AddEntryForm(props) {
 
     // Server-side validation
     try {
-      const body = {categoryID, statusID, priorityID, title, notes};
+      const body = {
+        categoryID,
+        statusID,
+        priorityID,
+        title: title.trim(),
+        notes,
+      };
       const response = await fetch('http://localhost:5000/add_entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -72,7 +78,7 @@ function AddEntryForm(props) {
             setTitle(e.target.value);
             setErrorObj({...errorObj, titleExistsError: null});
           }}
-          maxLength="100"
+          maxLength="200"
           autoFocus
           required
         />

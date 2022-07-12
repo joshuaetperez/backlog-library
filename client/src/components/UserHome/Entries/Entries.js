@@ -19,12 +19,12 @@ function EntryRow(props) {
 
   return (
     <Row className="entry-div px-3 py-2 border border-bottom-0">
-      <Col xs={6} md={8}>
+      <Col xs={12} md={8} className="text-truncate title-bold">
         <span className="entry-title" onClick={() => onTitleClick(entry)}>
           {entry.title}
         </span>
       </Col>
-      <Col xs={3} md={2}>
+      <Col xs={6} md={2}>
         {priorityArray[entry.priority_id - 1]}
       </Col>
       <Col>{typeArray[entry.category_id - 1]}</Col>
@@ -39,10 +39,10 @@ function RandomEntryRow(props) {
     <Container className="px-0 py-3">
       <Container className="bg-white fs-5 border-bottom">
         <Row className="px-3 py-2 fw-bold">
-          <Col xs={6} md={8}>
+          <Col xs={12} md={8}>
             Title
           </Col>
-          <Col xs={3} md={2}>
+          <Col xs={6} md={2}>
             Priority
           </Col>
           <Col>Type</Col>
@@ -92,10 +92,10 @@ function EntryGrid(props) {
         <h4 className="text-secondary">{statusArray[gridID - 1]}</h4>
         <Container className="bg-white fs-5 border-bottom">
           <Row className="px-3 py-2 fw-bold">
-            <Col xs={6} md={8}>
+            <Col xs={12} md={8}>
               Title
             </Col>
-            <Col xs={3} md={2}>
+            <Col xs={6} md={2}>
               Priority
             </Col>
             <Col>Type</Col>
