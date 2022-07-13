@@ -34,6 +34,7 @@ signupRouter.post(
       const output = `
         <h3>New Account Verification</h3>
         <a href="http://localhost:5000/user/verification/${uuid}">Please click here to verify your email account</a>
+        <p>Clicking the link will redirect you to the Backlog Library website.</p>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
       `;
       transporter.sendMail(

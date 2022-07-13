@@ -1,6 +1,10 @@
 const LocalStrategy = require('passport-local').Strategy;
 const bcrpyt = require('bcrypt');
-const {getUserByEmail, getUserByID} = require('./helpers');
+const {
+  getUserByEmail,
+  getUserByID,
+  checkEmailVerification,
+} = require('./helpers');
 
 function initialize(passport) {
   const authenticateUser = async (email, password, done) => {
@@ -12,12 +16,16 @@ function initialize(passport) {
     }
     try {
       if (await bcrpyt.compare(password, user.password)) {
-        return done(null, user);
-      } else {
+        if (await checkEmailVerification(email)) {
+          return done(null, user);
+        }
         return done(null, false, {
-          message: 'Login failed. Incorrect email or password.',
+          message: 'Login failed. Email has not been verified.',
         });
       }
+      return done(null, false, {
+        message: 'Login failed. Incorrect email or password.',
+      });
     } catch (err) {
       return done(err);
     }

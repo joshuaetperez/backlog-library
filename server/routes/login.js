@@ -3,8 +3,21 @@ const passport = require('passport');
 
 const loginRouter = express.Router();
 
-loginRouter.post('/login', passport.authenticate('local'), (req, res) => {
-  res.send('Logged in successfully!');
+loginRouter.post('/login', (req, res, next) => {
+  passport.authenticate('local', function (err, user, info) {
+    if (err) {
+      return next(err);
+    }
+    if (!user) {
+      return res.send(info.message);
+    }
+    req.logIn(user, function (err) {
+      if (err) {
+        return next(err);
+      }
+      res.send('Logged in successfully!');
+    });
+  })(req, res, next);
 });
 
 // Logs out user and redirects user to login page

@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
@@ -25,7 +26,14 @@ function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [signupSuccess, setSignupSuccess] = useState(null);
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
+
+  const resetForm = () => {
+    setEmail('');
+    setPassword('');
+    setConfirmPassword('');
+  };
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -82,7 +90,8 @@ function Signup() {
         }
         setErrorObj(errorState);
       } else {
-        window.location = '/';
+        resetForm();
+        setSignupSuccess(true);
       }
     } catch (err) {
       console.error(err.message);
@@ -91,6 +100,20 @@ function Signup() {
 
   return (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
+      {signupSuccess && (
+        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
+          <Alert
+            variant="success"
+            onClose={() => setSignupSuccess(null)}
+            dismissible
+          >
+            <p className="m-0 text-center">
+              An verification email has been sent to your registered email
+              address. Please click the verification link to continue.
+            </p>
+          </Alert>
+        </Container>
+      )}
       <Container className="bg-white my-sm-3 p-3 p-sm-5">
         <h3 className="mb-5">Sign up</h3>
         <Form onSubmit={onSubmitForm}>

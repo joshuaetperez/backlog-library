@@ -8,7 +8,8 @@ import Form from 'react-bootstrap/Form';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [hasLoginFailed, setHasLoginFailed] = useState(false);
+  const [loginFailed, setLoginFailed] = useState(null);
+  const [emailVerified, setEmailVerified] = useState(null);
 
   const onSubmitForm = async (e) => {
     e.preventDefault();
@@ -21,10 +22,20 @@ function Login() {
         body: JSON.stringify(body),
         credentials: 'include',
       });
-      if (response.status === 401) {
-        setHasLoginFailed(true);
+      if (response.status === 200) {
+        const responseText = await response.text();
+        if (responseText === 'Login failed. Incorrect email or password.') {
+          setLoginFailed(true);
+        } else if (
+          responseText === 'Login failed. Email has not been verified.'
+        ) {
+          setLoginFailed(true);
+          setEmailVerified(true);
+        } else {
+          window.location = '/';
+        }
       } else {
-        window.location = '/';
+        console.error('Something went wrong');
       }
     } catch (err) {
       console.error(err.message);
@@ -33,15 +44,20 @@ function Login() {
 
   return (
     <div className="bg-light position-relative d-flex flex-column flex-grow-1 py-3">
-      {hasLoginFailed && (
+      {loginFailed && (
         <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
           <Alert
             variant="danger"
-            onClose={() => setHasLoginFailed(false)}
+            onClose={() => {
+              setLoginFailed(null);
+              setEmailVerified(null);
+            }}
             dismissible
           >
             <p className="m-0 text-center">
-              Login failed. Incorrect email or password.
+              {emailVerified
+                ? 'The email address of this account has not yet been verified. Please check your email and click on the verification link to continue.'
+                : 'Login failed. Incorrect email or password.'}
             </p>
           </Alert>
         </Container>
@@ -55,7 +71,8 @@ function Login() {
               type="email"
               value={email}
               onChange={(e) => {
-                setHasLoginFailed(false);
+                setLoginFailed(null);
+                setEmailVerified(null);
                 setEmail(e.target.value);
               }}
               required
@@ -67,7 +84,8 @@ function Login() {
               type="password"
               value={password}
               onChange={(e) => {
-                setHasLoginFailed(false);
+                setLoginFailed(null);
+                setEmailVerified(null);
                 setPassword(e.target.value);
               }}
               required
