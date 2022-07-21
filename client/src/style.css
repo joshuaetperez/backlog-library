@@ -66,6 +66,16 @@ select:valid {
   font-size: 28px;
 }
 
+.reverify-link {
+  color: #999999;
+  text-decoration: none;
+}
+
+.reverify-link:hover {
+  color: #0d6efd;
+  text-decoration: underline;
+}
+
 @media (min-width: 576px) {
   .card-height {
     height: 30rem;

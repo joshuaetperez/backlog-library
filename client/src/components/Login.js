@@ -99,8 +99,8 @@ function Login() {
             Login
           </Button>
         </Form>
-        <div className="text-center mb-5 text-muted">Forgot Password?</div>
-        <div className="text-center">
+        <div className="text-center text-muted">Forgot Password?</div>
+        <div className="text-center mt-5">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
       </Container>

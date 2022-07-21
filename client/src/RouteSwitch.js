@@ -11,6 +11,7 @@ import Settings from './components/UserHome/SettingsComponents/Settings';
 import CategoryPage from './components/UserHome/Category/CategoryPage';
 import Container from 'react-bootstrap/Container';
 import './style.css';
+import Reverify from './components/Reverify';
 
 const RouteSwitch = () => {
   const user = useContext(myContext);
@@ -45,6 +46,7 @@ const RouteSwitch = () => {
               </Route>
               <Route path="login" element={<Navigate to="/" />} />
               <Route path="signup" element={<Navigate to="/" />} />
+              <Route path="reverify" element={<Navigate to="/" />} />
               <Route path="settings" element={<Settings />} />
             </>
           ) : (
@@ -58,6 +60,7 @@ const RouteSwitch = () => {
               <Route path="books" element={<Navigate to="/" />} />
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
+              <Route path="reverify" element={<Reverify />} />
               <Route path="settings" element={<Navigate to="/" />} />
             </>
           )}

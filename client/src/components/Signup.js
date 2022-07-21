@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -108,7 +109,7 @@ function Signup() {
             dismissible
           >
             <p className="m-0 text-center">
-              An verification email has been sent to your registered email
+              A verification email has been sent to your registered email
               address. Please click the verification link to continue.
             </p>
           </Alert>
@@ -191,6 +192,11 @@ function Signup() {
           >
             Sign up
           </Button>
+          <div className="text-center mt-5">
+            <Link className="reverify-link" to="/reverify">
+              Resend Verification Email
+            </Link>
+          </div>
         </Form>
       </Container>
     </div>

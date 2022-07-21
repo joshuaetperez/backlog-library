@@ -77,6 +77,22 @@ async function checkEmailVerification(email) {
   }
 }
 
+// Returns true if the given email has already been verified, false otherwise
+async function checkEmailNotVerified(email) {
+  try {
+    const response = await pool.query(
+      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1) AND verified = FALSE',
+      [email]
+    );
+    if (response.rows[0].total === '0') {
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
 // Returns true if the given title, category_id, and user_id combination already exists, false otherwise
 async function checkTitleInUse(title, category_id, user_id) {
   if (!(category_id >= 1 && category_id <= 6)) return null;
@@ -117,6 +133,7 @@ module.exports = {
   getEntries,
   checkEmailInUse,
   checkEmailVerification,
+  checkEmailNotVerified,
   checkTitleInUse,
   checkEditedTitleInUse,
 };
