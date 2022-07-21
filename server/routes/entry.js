@@ -9,7 +9,7 @@ const modalEntryRouter = express.Router();
 
 // Validates form info and inserts it into the database if criteria is met
 modalEntryRouter.post(
-  '/add_entry',
+  '/add-entry',
   addEntrySchema,
   validateRequestSchema,
   async (req, res) => {
@@ -28,7 +28,7 @@ modalEntryRouter.post(
 
 // Validates form info and edits the corresponding entry in the database if criteria is met
 modalEntryRouter.post(
-  '/edit_entry',
+  '/edit-entry',
   editEntrySchema,
   validateRequestSchema,
   async (req, res) => {
@@ -47,7 +47,7 @@ modalEntryRouter.post(
 );
 
 // Fetches all entries belonging to the user and sends it to the client
-modalEntryRouter.get('/get_entries', async (req, res) => {
+modalEntryRouter.get('/get-entries', async (req, res) => {
   try {
     const entries = await getEntries(req.user.userID);
     res.send(entries);
@@ -57,7 +57,7 @@ modalEntryRouter.get('/get_entries', async (req, res) => {
 });
 
 // Deletes an entry with the given entry_id
-modalEntryRouter.delete('/delete_entry/:id', async (req, res) => {
+modalEntryRouter.delete('/delete-entry/:id', async (req, res) => {
   try {
     await pool.query('DELETE FROM entries WHERE entry_id = $1', [
       req.params.id,

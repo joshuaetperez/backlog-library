@@ -2,9 +2,10 @@ const express = require('express');
 const pool = require('../db');
 const bcrpyt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const {v4: uuidv4} = require('uuid');
+const crypto = require('crypto');
 const registerSchema = require('../schema/register-schema');
 const reverifySchema = require('../schema/reverify-schema');
+const resetPasswordSchema = require('../schema/reset-password-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 
 const signupRouter = express.Router();
@@ -26,7 +27,7 @@ signupRouter.post(
     try {
       const {email, password} = req.body;
       const hashedPassword = await bcrpyt.hash(password, 10);
-      const token = uuidv4();
+      const token = crypto.randomBytes(64).toString('hex');
       const newUser = await pool.query(
         `INSERT INTO users (email, password, token, token_timestamp) VALUES($1, $2, $3, to_timestamp(${
           Date.now() / 1000
@@ -69,7 +70,7 @@ signupRouter.post(
   async (req, res) => {
     try {
       const {email} = req.body;
-      const token = uuidv4();
+      const token = crypto.randomBytes(64).toString('hex');
       const updatedUser = await pool.query(
         `UPDATE users SET (token, token_timestamp) = ($1, to_timestamp(${
           Date.now() / 1000
@@ -98,6 +99,48 @@ signupRouter.post(
         }
       );
       res.json(updatedUser.rows[0]);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+);
+
+signupRouter.post(
+  '/reset-password',
+  resetPasswordSchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      const {email} = req.body;
+      const token = crypto.randomBytes(64).toString('hex');
+      const newUser = await pool.query(
+        `UPDATE users SET (token, token_timestamp) = ($1, to_timestamp(${
+          Date.now() / 1000
+        })) WHERE email = $3 RETURNING *`,
+        [token, email]
+      );
+
+      const output = `
+        <h3>Password Reset Request</h3>
+        <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
+        <p>Ignore this email if you did not create a Backlog Library account.</p>
+      `;
+      transporter.sendMail(
+        {
+          from: '"Backlog Library" <backloglibrary@gmail.com>',
+          to: email,
+          subject: 'Password Reset Request',
+          html: output,
+        },
+        (err, info) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('Message sent: %s', info.messageId);
+          }
+        }
+      );
+      res.json(newUser.rows[0]);
     } catch (err) {
       console.error(err.message);
     }

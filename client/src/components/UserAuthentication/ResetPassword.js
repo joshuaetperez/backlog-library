@@ -1,0 +1,94 @@
+import {useState} from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+
+const emailErrorMessage = 'Email address is not registered to an account';
+
+function ResetPassword() {
+  const [email, setEmail] = useState('');
+  const [resetSuccess, setResetSuccess] = useState(null);
+  const [emailError, setEmailError] = useState(null);
+
+  const resetForm = () => {
+    setEmail('');
+  };
+
+  const onSubmitForm = async (e) => {
+    e.preventDefault();
+
+    // Server-side form validation
+    try {
+      const body = {email};
+      const response = await fetch('http://localhost:5000/reset-password', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+      const jsonData = await response.json();
+      const errorArray = jsonData.errors;
+      // If there is an error concerning the email, display error message on the form
+      if (errorArray !== undefined && errorArray[0].msg === emailErrorMessage) {
+        setEmailError(true);
+      } else {
+        resetForm();
+        setResetSuccess(true);
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
+  };
+
+  return (
+    <div className="bg-light d-flex flex-column flex-grow-1 py-3">
+      {resetSuccess && (
+        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
+          <Alert
+            variant="success"
+            onClose={() => setResetSuccess(null)}
+            dismissible
+          >
+            <p className="m-0 text-center">
+              A reset password email has been sent to your registered email
+              address.
+            </p>
+          </Alert>
+        </Container>
+      )}
+      <Container className="bg-white my-sm-3 p-3 p-sm-5">
+        <h3 className="mb-5">Reset Password</h3>
+        <Form onSubmit={onSubmitForm}>
+          <Form.Group className="mb-3" controlId="email">
+            <Form.Label>Email</Form.Label>
+            <Form.Control
+              type="email"
+              value={email}
+              onChange={(e) => {
+                setEmailError(null);
+                setEmail(e.target.value);
+              }}
+              required
+            />
+            {emailError !== null && (
+              <Form.Text className="form-error fs-6">
+                <span className="material-icons">error</span>
+                {emailErrorMessage}
+              </Form.Text>
+            )}
+          </Form.Group>
+          <Button
+            type="submit"
+            variant="primary"
+            className="rounded-pill w-100 mt-2 mb-3 p-2"
+          >
+            Reset Password
+          </Button>
+        </Form>
+      </Container>
+    </div>
+  );
+}
+
+export default ResetPassword;

@@ -20,7 +20,7 @@ function UserHome() {
   useEffect(() => {
     async function getEntries() {
       try {
-        const response = await fetch(`http://localhost:5000/get_entries`, {
+        const response = await fetch(`http://localhost:5000/get-entries`, {
           credentials: 'include',
         });
         const entries = await response.json();

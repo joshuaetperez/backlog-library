@@ -193,7 +193,7 @@ function Signup() {
             Sign up
           </Button>
           <div className="text-center mt-5">
-            <Link className="reverify-link" to="/reverify">
+            <Link to="/reverify" className="reverify-link">
               Resend Verification Email
             </Link>
           </div>

@@ -33,7 +33,7 @@ function EditEntryForm(props) {
         title: title.trim(),
         notes,
       };
-      const response = await fetch('http://localhost:5000/edit_entry', {
+      const response = await fetch('http://localhost:5000/edit-entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

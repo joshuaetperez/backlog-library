@@ -99,7 +99,11 @@ function Login() {
             Login
           </Button>
         </Form>
-        <div className="text-center text-muted">Forgot Password?</div>
+        <div className="text-center">
+          <Link to="/reset-password" className="forgot-password-link">
+            Forgot Password?
+          </Link>
+        </div>
         <div className="text-center mt-5">
           Don't have an account? <Link to="/signup">Sign up</Link>
         </div>
