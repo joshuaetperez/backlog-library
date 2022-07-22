@@ -2,6 +2,7 @@ const express = require('express');
 const pool = require('../db');
 
 const userRouter = express.Router();
+const tokenTimeLimit = process.env.TOKEN_TIME_LIMIT;
 
 userRouter.get('/user', (req, res) => {
   res.send(req.user);
@@ -10,7 +11,7 @@ userRouter.get('/user', (req, res) => {
 userRouter.get('/user/verification/:token', async (req, res) => {
   try {
     await pool.query(
-      'UPDATE users SET (token, token_timestamp, verified) = (null, null, TRUE) WHERE token = $1',
+      'UPDATE users SET (token, token_timestamptz, verified) = (null, null, TRUE) WHERE token = $1',
       [req.params.token]
     );
     res.redirect('http://localhost:3000/login');
@@ -19,15 +20,31 @@ userRouter.get('/user/verification/:token', async (req, res) => {
   }
 });
 
-userRouter.get('/user/reset-password/:token', async (req, res) => {
+userRouter.get('/user/forgot-password/:token', async (req, res) => {
+  res.redirect(`http://localhost:3000/reset-password/${req.params.token}`);
+});
+
+userRouter.get('/user/check-token/:token', async (req, res) => {
   try {
-    await pool.query(
-      'UPDATE users SET (token, token_timestamp, verified) = (null, null, TRUE) WHERE token = $1',
-      [req.params.token]
+    const token = req.params.token;
+    const response = await pool.query(
+      'SELECT token_timestamptz FROM users WHERE token = $1',
+      [token]
     );
-    // Check timestamp to see if link expires
-    // Go to new page (not login) with given token in url
-    res.redirect('http://localhost:3000/login');
+    if (response.rows.length === 0) {
+      return res.send('Invalid token');
+    }
+
+    const timeNow = new Date().getTime();
+    // If the link has expired, the token should no longer work
+    if (
+      tokenTimeLimit <
+      timeNow - response.rows[0].token_timestamptz.getTime()
+    ) {
+      return res.send('Expired token');
+    }
+    // If the link has NOT expired, the token is considered valid
+    res.send('Valid token');
   } catch (err) {
     console.error(err);
   }

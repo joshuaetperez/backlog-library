@@ -15,7 +15,7 @@ const registerSchema = [
     .exists()
     .isLength({min: 6})
     .withMessage('Password must contain at least 6 characters'),
-  body('confirmPassword')
+  body('confirmationPassword')
     .exists()
     .isLength({min: 6})
     .withMessage('Confirmation password must contain at least 6 characters')

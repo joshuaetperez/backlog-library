@@ -8,6 +8,7 @@ import Footer from './components/Footer';
 import Login from './components/UserAuthentication/Login';
 import Signup from './components/UserAuthentication/Signup';
 import Reverify from './components/UserAuthentication/Reverify';
+import ForgotPassword from './components/UserAuthentication/ForgotPassword';
 import ResetPassword from './components/UserAuthentication/ResetPassword';
 import Settings from './components/UserHome/SettingsComponents/Settings';
 import CategoryPage from './components/UserHome/Category/CategoryPage';
@@ -24,7 +25,7 @@ const RouteSwitch = () => {
       <Container fluid className="d-flex flex-column min-vh-100 p-0">
         <BrowserRouter>
           <Header />
-          <div className="container-fluid bg-light d-flex flex-grow-1"></div>
+          <Container fluid className="bg-light d-flex flex-grow-1"></Container>
           <Footer />
         </BrowserRouter>
       </Container>
@@ -48,7 +49,11 @@ const RouteSwitch = () => {
               <Route path="login" element={<Navigate to="/" />} />
               <Route path="signup" element={<Navigate to="/" />} />
               <Route path="reverify" element={<Navigate to="/" />} />
-              <Route path="reset-password" element={<Navigate to="/" />} />
+              <Route path="forgot-password" element={<Navigate to="/" />} />
+              <Route
+                path="reset-password/:token"
+                element={<Navigate to="/" />}
+              />
               <Route path="settings" element={<Settings />} />
             </>
           ) : (
@@ -63,7 +68,8 @@ const RouteSwitch = () => {
               <Route path="login" element={<Login />} />
               <Route path="signup" element={<Signup />} />
               <Route path="reverify" element={<Reverify />} />
-              <Route path="reset-password" element={<ResetPassword />} />
+              <Route path="forgot-password" element={<ForgotPassword />} />
+              <Route path="reset-password/:token" element={<ResetPassword />} />
               <Route path="settings" element={<Navigate to="/" />} />
             </>
           )}

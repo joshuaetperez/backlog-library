@@ -110,6 +110,23 @@ async function checkTitleInUse(title, category_id, user_id) {
   }
 }
 
+// Returns true if the given token is associated to a user, false otherwise
+async function checkToken(token) {
+  if (token === '' || token === null) return false;
+  try {
+    const response = await pool.query(
+      'SELECT COUNT(*) AS total FROM users WHERE token = $1',
+      [token]
+    );
+    if (response.rows[0].total === '0') {
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
 // Returns true if the given title, category_id, and user_id combination already exists AND the given entry_id is DIFFERENT from the entry that contains the combination, false otherwise
 async function checkEditedTitleInUse(title, category_id, user_id, entry_id) {
   if (!(category_id >= 1 && category_id <= 6)) return null;
@@ -135,5 +152,6 @@ module.exports = {
   checkEmailVerification,
   checkEmailNotVerified,
   checkTitleInUse,
+  checkToken,
   checkEditedTitleInUse,
 };

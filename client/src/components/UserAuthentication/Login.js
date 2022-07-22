@@ -45,7 +45,7 @@ function Login() {
   return (
     <div className="bg-light position-relative d-flex flex-column flex-grow-1 py-3">
       {loginFailed && (
-        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
+        <Container>
           <Alert
             variant="danger"
             onClose={() => {
@@ -100,7 +100,7 @@ function Login() {
           </Button>
         </Form>
         <div className="text-center">
-          <Link to="/reset-password" className="forgot-password-link">
+          <Link to="/forgot-password" className="forgot-password-link">
             Forgot Password?
           </Link>
         </div>

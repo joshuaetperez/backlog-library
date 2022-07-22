@@ -1,17 +1,19 @@
 const {body} = require('express-validator');
-const {checkEmailVerification} = require('../helpers');
 
 const resetPasswordSchema = [
-  body('email')
+  body('newPassword')
     .exists()
-    .isEmail()
-    .withMessage('Email must be a valid email address')
-    .custom(async (value) => {
-      if (!(await checkEmailVerification(value))) {
-        throw new Error(
-          'Email address is either not verified or is not registered to an account'
-        );
+    .isLength({min: 6})
+    .withMessage('New password must contain at least 6 characters'),
+  body('confirmationPassword')
+    .exists()
+    .isLength({min: 6})
+    .withMessage('Confirmation password must contain at least 6 characters')
+    .custom((value, {req}) => {
+      if (value !== req.body.newPassword) {
+        throw new Error('Confirmation password does not match new password');
       }
+      return true;
     }),
 ];
 

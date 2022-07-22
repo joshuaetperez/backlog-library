@@ -9,31 +9,31 @@ function createDefaultErrorState() {
   return {
     emailExistsError: null,
     passwordLengthError: null,
-    confirmPasswordLengthError: null,
-    confirmPasswordNoMatchError: null,
+    confirmationPasswordLengthError: null,
+    confirmationPasswordNoMatchError: null,
   };
 }
 
 const errorMessages = {
   emailExistsErrorMessage: 'Email address is already in use',
   passwordLengthErrorMessage: 'Password must contain at least 6 characters',
-  confirmPasswordLengthErrorMessage:
+  confirmationPasswordLengthErrorMessage:
     'Confirmation password must contain at least 6 characters',
-  confirmPasswordNoMatchErrorMessage:
+  confirmationPasswordNoMatchErrorMessage:
     'Confirmation password does not match password',
 };
 
 function Signup() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+  const [confirmationPassword, setConfirmationPassword] = useState('');
   const [signupSuccess, setSignupSuccess] = useState(null);
   const [errorObj, setErrorObj] = useState(createDefaultErrorState());
 
   const resetForm = () => {
     setEmail('');
     setPassword('');
-    setConfirmPassword('');
+    setConfirmationPassword('');
   };
 
   const onSubmitForm = async (e) => {
@@ -42,16 +42,16 @@ function Signup() {
     // Client-side form validation
     let errorState = createDefaultErrorState();
     if (password.length < 6) errorState.passwordLengthError = true;
-    if (confirmPassword.length < 6)
-      errorState.confirmPasswordLengthError = true;
-    if (password !== confirmPassword)
-      errorState.confirmPasswordNoMatchError = true;
+    if (confirmationPassword.length < 6)
+      errorState.confirmationPasswordLengthError = true;
+    if (password !== confirmationPassword)
+      errorState.confirmationPasswordNoMatchError = true;
 
     // If there is at least one of the following errors, display error messages on the form without making a server request
     if (
       errorState.passwordLengthError === true ||
-      errorState.confirmPasswordLengthError === true ||
-      errorState.confirmPasswordNoMatchError === true
+      errorState.confirmationPasswordLengthError === true ||
+      errorState.confirmationPasswordNoMatchError === true
     ) {
       setErrorObj(errorState);
       return;
@@ -60,7 +60,7 @@ function Signup() {
     // Server-side form validation
     errorState = createDefaultErrorState();
     try {
-      const body = {email, password, confirmPassword};
+      const body = {email, password, confirmationPassword};
       const response = await fetch('http://localhost:5000/signup', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
@@ -79,11 +79,11 @@ function Signup() {
             case errorMessages.passwordLengthErrorMessage:
               errorState.passwordLengthError = true;
               break;
-            case errorMessages.confirmPasswordLengthErrorMessage:
-              errorState.confirmPasswordLengthError = true;
+            case errorMessages.confirmationPasswordLengthErrorMessage:
+              errorState.confirmationPasswordLengthError = true;
               break;
-            case errorMessages.confirmPasswordNoMatchErrorMessage:
-              errorState.confirmPasswordNoMatchError = true;
+            case errorMessages.confirmationPasswordNoMatchErrorMessage:
+              errorState.confirmationPasswordNoMatchError = true;
               break;
             default:
               break;
@@ -102,7 +102,7 @@ function Signup() {
   return (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
       {signupSuccess && (
-        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-5">
+        <Container>
           <Alert
             variant="success"
             onClose={() => setSignupSuccess(null)}
@@ -145,6 +145,7 @@ function Signup() {
                 setErrorObj({
                   ...errorObj,
                   passwordLengthError: null,
+                  confirmationPasswordNoMatchError: null,
                 });
                 setPassword(e.target.value);
               }}
@@ -161,27 +162,27 @@ function Signup() {
             <Form.Label>Confirm password</Form.Label>
             <Form.Control
               type="password"
-              value={confirmPassword}
+              value={confirmationPassword}
               onChange={(e) => {
                 setErrorObj({
                   ...errorObj,
-                  confirmPasswordLengthError: null,
-                  confirmPasswordNoMatchError: null,
+                  confirmationPasswordLengthError: null,
+                  confirmationPasswordNoMatchError: null,
                 });
-                setConfirmPassword(e.target.value);
+                setConfirmationPassword(e.target.value);
               }}
               required
             />
-            {errorObj['confirmPasswordLengthError'] !== null && (
+            {errorObj['confirmationPasswordLengthError'] !== null && (
               <Form.Text className="form-error fs-6">
                 <span className="material-icons">error</span>
-                {errorMessages.confirmPasswordLengthErrorMessage}
+                {errorMessages.confirmationPasswordLengthErrorMessage}
               </Form.Text>
             )}
-            {errorObj['confirmPasswordNoMatchError'] !== null && (
+            {errorObj['confirmationPasswordNoMatchError'] !== null && (
               <Form.Text className="form-error fs-6">
                 <span className="material-icons">error</span>
-                {errorMessages.confirmPasswordNoMatchErrorMessage}
+                {errorMessages.confirmationPasswordNoMatchErrorMessage}
               </Form.Text>
             )}
           </Form.Group>
@@ -192,10 +193,13 @@ function Signup() {
           >
             Sign up
           </Button>
-          <div className="text-center mt-5">
+          <div className="text-center">
             <Link to="/reverify" className="reverify-link">
               Resend Verification Email
             </Link>
+          </div>
+          <div className="text-center mt-5">
+            Already have an account? <Link to="/login">Login</Link>
           </div>
         </Form>
       </Container>

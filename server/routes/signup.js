@@ -5,8 +5,10 @@ const nodemailer = require('nodemailer');
 const crypto = require('crypto');
 const registerSchema = require('../schema/register-schema');
 const reverifySchema = require('../schema/reverify-schema');
+const forgotPasswordSchema = require('../schema/forgot-password-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
+const tokenTimeLimit = process.env.TOKEN_TIME_LIMIT;
 
 const signupRouter = express.Router();
 
@@ -28,17 +30,17 @@ signupRouter.post(
       const {email, password} = req.body;
       const hashedPassword = await bcrpyt.hash(password, 10);
       const token = crypto.randomBytes(64).toString('hex');
-      const newUser = await pool.query(
-        `INSERT INTO users (email, password, token, token_timestamp) VALUES($1, $2, $3, to_timestamp(${
-          Date.now() / 1000
-        })) RETURNING *`,
-        [email, hashedPassword, token]
+      const now = new Date();
+      const response = await pool.query(
+        'INSERT INTO users (email, password, token, token_timestamptz) VALUES($1, $2, $3, $4) RETURNING *',
+        [email, hashedPassword, token, now]
       );
 
       const output = `
         <h3>New Account Verification</h3>
         <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
       transporter.sendMail(
         {
@@ -55,14 +57,14 @@ signupRouter.post(
           }
         }
       );
-      res.json(newUser.rows[0]);
+      res.json(response.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
   }
 );
 
-// Validates email from form info and updates token and token_timestamp of user
+// Validates email from form info and updates token and token_timestamptz of user
 signupRouter.post(
   '/reverify',
   reverifySchema,
@@ -71,17 +73,17 @@ signupRouter.post(
     try {
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
-      const updatedUser = await pool.query(
-        `UPDATE users SET (token, token_timestamp) = ($1, to_timestamp(${
-          Date.now() / 1000
-        })) WHERE email = $2 RETURNING *`,
-        [token, email]
+      const now = new Date();
+      const response = await pool.query(
+        'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
+        [token, now, email]
       );
 
       const output = `
         <h3>Resent Email Verification</h3>
         <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
       transporter.sendMail(
         {
@@ -98,7 +100,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(updatedUser.rows[0]);
+      res.json(response.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -106,24 +108,26 @@ signupRouter.post(
 );
 
 signupRouter.post(
-  '/reset-password',
-  resetPasswordSchema,
+  '/forgot-password',
+  forgotPasswordSchema,
   validateRequestSchema,
   async (req, res) => {
     try {
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
-      const newUser = await pool.query(
-        `UPDATE users SET (token, token_timestamp) = ($1, to_timestamp(${
-          Date.now() / 1000
-        })) WHERE email = $3 RETURNING *`,
-        [token, email]
+      const now = new Date();
+      const response = await pool.query(
+        'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
+        [token, now, email]
       );
 
+      const resetLink = `<a href="http://localhost:5000/user/forgot-password/${token}" style='display: inline-block; background-color: #489be8; color: #FFFFFF; padding: 10px 20px; border: none; border-radius: 3px; text-decoration: none;'>Reset Password</a>`;
       const output = `
         <h3>Password Reset Request</h3>
-        <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
-        <p>Ignore this email if you did not create a Backlog Library account.</p>
+        <p>We received your request for a password reset on this account. Click on the bottom below to reset your password.</p>
+        ${resetLink}
+        <p><b>This link will expire in 24 hours.</b> Ignore this email if you did not request a password change.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
       transporter.sendMail(
         {
@@ -140,7 +144,73 @@ signupRouter.post(
           }
         }
       );
-      res.json(newUser.rows[0]);
+      res.json(response.rows[0]);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+);
+
+signupRouter.post(
+  '/reset-password/:token',
+  resetPasswordSchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      const {newPassword} = req.body;
+      const token = req.params.token;
+      const now = new Date();
+      const tokenResponse = await pool.query(
+        'SELECT * FROM users WHERE token = $1',
+        [token]
+      );
+      if (tokenResponse.rows.length === 0) {
+        return res.send('Reset Password failed: Invalid token');
+      } else if (
+        await bcrpyt.compare(newPassword, tokenResponse.rows[0].password)
+      ) {
+        return res.send(
+          'Reset Password failed: New password cannot be the same as your old password'
+        );
+      }
+
+      const timeNow = new Date().getTime();
+      // If the link has expired, the token should no longer work
+      if (
+        tokenTimeLimit <
+        timeNow - tokenResponse.rows[0].token_timestamptz.getTime()
+      ) {
+        return res.send('Reset Password failed: Expired token');
+      }
+
+      const hashedPassword = await bcrpyt.hash(newPassword, 10);
+      const updateResponse = await pool.query(
+        'UPDATE users SET (password, token, token_timestamptz) = ($1, null, null) WHERE token = $2 RETURNING email',
+        [hashedPassword, token]
+      );
+      const email = updateResponse.rows[0].email;
+
+      const output = `
+        <h3>Password Reset Confirmation</h3>
+        <p>We are sending this email to confirm that you have successfully changed your password to this account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
+      `;
+      transporter.sendMail(
+        {
+          from: '"Backlog Library" <backloglibrary@gmail.com>',
+          to: email,
+          subject: 'Password Reset Confirmation',
+          html: output,
+        },
+        (err, info) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('Message sent: %s', info.messageId);
+          }
+        }
+      );
+      res.send('Reset Password successfully!');
     } catch (err) {
       console.error(err.message);
     }

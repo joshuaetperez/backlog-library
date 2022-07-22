@@ -34,12 +34,6 @@ function Header() {
           <Stack direction="horizontal" gap={2} className="text-nowrap">
             {isUserLoggedIn ? (
               <>
-                {/* <Button type="button" className="d-flex px-2">
-                  <span className="material-icons">account_circle</span>
-                </Button>
-                <Button type="button" variant="secondary" onClick={onLogOut}>
-                  Logout
-                </Button> */}
                 <DropdownButton
                   variant="primary"
                   title={

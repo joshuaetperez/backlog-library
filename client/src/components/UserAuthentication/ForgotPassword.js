@@ -1,15 +1,16 @@
 import {useState} from 'react';
+import {Link} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
 const emailErrorMessage =
-  'Email address is either already verified or is not registered to an account';
+  'Email address is either not verified or is not registered to an account';
 
-function Reverify() {
+function ForgotPassword() {
   const [email, setEmail] = useState('');
-  const [reverificationSuccess, setReverificationSuccess] = useState(null);
+  const [requestSuccess, setRequestSuccess] = useState(null);
   const [emailError, setEmailError] = useState(null);
 
   const resetForm = () => {
@@ -22,7 +23,7 @@ function Reverify() {
     // Server-side form validation
     try {
       const body = {email};
-      const response = await fetch('http://localhost:5000/reverify', {
+      const response = await fetch('http://localhost:5000/forgot-password', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
@@ -35,7 +36,7 @@ function Reverify() {
         setEmailError(true);
       } else {
         resetForm();
-        setReverificationSuccess(true);
+        setRequestSuccess(true);
       }
     } catch (err) {
       console.error(err.message);
@@ -44,22 +45,22 @@ function Reverify() {
 
   return (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
-      {reverificationSuccess && (
+      {requestSuccess && (
         <Container>
           <Alert
             variant="success"
-            onClose={() => setReverificationSuccess(null)}
+            onClose={() => setRequestSuccess(null)}
             dismissible
           >
             <p className="m-0 text-center">
-              A verification email has been sent to your registered email
+              A reset password email has been sent to the provided email
               address.
             </p>
           </Alert>
         </Container>
       )}
       <Container className="bg-white my-sm-3 p-3 p-sm-5">
-        <h3 className="mb-5">Resend Verification Email</h3>
+        <h3 className="mb-5">Forgot Password?</h3>
         <Form onSubmit={onSubmitForm}>
           <Form.Group className="mb-3" controlId="email">
             <Form.Label>Email</Form.Label>
@@ -84,12 +85,15 @@ function Reverify() {
             variant="primary"
             className="rounded-pill w-100 mt-2 mb-3 p-2"
           >
-            Resend Email
+            Send Reset Request
           </Button>
         </Form>
+        <div className="text-center mt-5">
+          Remembered your password? <Link to="/login">Login</Link>
+        </div>
       </Container>
     </div>
   );
 }
 
-export default Reverify;
+export default ForgotPassword;
