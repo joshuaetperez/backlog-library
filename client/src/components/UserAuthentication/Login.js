@@ -54,11 +54,20 @@ function Login() {
             }}
             dismissible
           >
-            <p className="m-0 text-center">
-              {emailVerified
-                ? 'The email address of this account has not yet been verified. Please check your email and click on the verification link to continue.'
-                : 'Login failed. Incorrect email or password.'}
-            </p>
+            {emailVerified ? (
+              <p className="m-0 text-center">
+                The email address of this account has not yet been verified.
+                Please check your email and click on the verification link to
+                continue.{' '}
+                <Link to="/reverify">
+                  Or click here to resend verification email.
+                </Link>
+              </p>
+            ) : (
+              <p className="m-0 text-center">
+                Login failed. Incorrect email or password.
+              </p>
+            )}
           </Alert>
         </Container>
       )}
