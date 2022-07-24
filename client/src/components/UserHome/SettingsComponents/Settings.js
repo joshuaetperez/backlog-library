@@ -17,7 +17,21 @@ function Settings() {
 
   const onEmailChange = () => {};
   const onPasswordChange = () => {};
-  const onDeleteEntries = () => {};
+  const onDeleteEntries = async (e) => {
+    e.preventDefault();
+    try {
+      const body = {category: deleteCategory};
+      const response = await fetch('http://localhost:5000/delete-entries', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+      // Display alert saying that entries were deleted successfully
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const onDeleteAccount = () => {};
 
   return (
@@ -128,7 +142,7 @@ function Settings() {
                   <option value="3">Anime</option>
                   <option value="4">Manga</option>
                   <option value="5">Games</option>
-                  <option value="5">Books</option>
+                  <option value="6">Books</option>
                 </Form.Select>
               </Col>
             </Form.Group>

@@ -26,19 +26,21 @@ function EditEntryForm(props) {
     // Server-side validation
     try {
       const body = {
-        entryID,
         categoryID,
         statusID,
         priorityID,
         title: title.trim(),
         notes,
       };
-      const response = await fetch('http://localhost:5000/edit-entry', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify(body),
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `http://localhost:5000/edit-entry/${entryID}`,
+        {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(body),
+          credentials: 'include',
+        }
+      );
       const jsonData = await response.json();
       const errorArray = jsonData.errors;
 

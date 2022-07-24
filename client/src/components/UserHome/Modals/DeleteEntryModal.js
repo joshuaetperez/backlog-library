@@ -9,7 +9,7 @@ function DeleteEntryModal(props) {
   const onConfirmation = async () => {
     const entryID = props.modalData.editedEntry.entry_id;
     try {
-      await fetch('http://localhost:5000/delete-entry/' + entryID, {
+      await fetch(`http://localhost:5000/delete-entry/${entryID}`, {
         method: 'DELETE',
         headers: {'Content-Type': 'application/json'},
         credentials: 'include',

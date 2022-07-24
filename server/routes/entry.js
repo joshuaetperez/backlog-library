@@ -27,17 +27,16 @@ modalEntryRouter.post(
 );
 
 // Validates form info and edits the corresponding entry in the database if criteria is met
-modalEntryRouter.post(
-  '/edit-entry',
+modalEntryRouter.put(
+  '/edit-entry/:entryID',
   editEntrySchema,
   validateRequestSchema,
   async (req, res) => {
     try {
-      const {entryID, categoryID, statusID, priorityID, title, notes} =
-        req.body;
+      const {categoryID, statusID, priorityID, title, notes} = req.body;
       const editedEntry = await pool.query(
         `UPDATE entries SET (category_id, status_id, priority_id, title, notes) = ($1, $2, $3, $4, $5) WHERE entry_id = $6 RETURNING *`,
-        [categoryID, statusID, priorityID, title, notes, entryID]
+        [categoryID, statusID, priorityID, title, notes, req.params.entryID]
       );
       res.json(editedEntry.rows[0]);
     } catch (err) {
@@ -57,10 +56,10 @@ modalEntryRouter.get('/get-entries', async (req, res) => {
 });
 
 // Deletes an entry with the given entry_id
-modalEntryRouter.delete('/delete-entry/:id', async (req, res) => {
+modalEntryRouter.delete('/delete-entry/:entryID', async (req, res) => {
   try {
     await pool.query('DELETE FROM entries WHERE entry_id = $1', [
-      req.params.id,
+      req.params.entryID,
     ]);
     res.send('Entry deleted successfully');
   } catch (err) {

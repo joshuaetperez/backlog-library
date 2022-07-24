@@ -1,7 +1,16 @@
-const {body} = require('express-validator');
+const {body, param} = require('express-validator');
 const {getUserByID, checkEditedTitleInUse} = require('../helpers');
 
 const editEntrySchema = [
+  param('entryID')
+    .exists()
+    .toInt()
+    .custom((value, {req}) => {
+      if (!(value >= 1)) {
+        throw new Error('EntryID is invalid');
+      }
+      return true;
+    }),
   body('title')
     .exists()
     .isLength({min: 1, max: 200})
@@ -21,14 +30,6 @@ const editEntrySchema = [
         throw new Error('Category is invalid so title cannot be checked');
       } else if (isEditedTitleInUse) {
         throw new Error('Title already exists in this category');
-      }
-      return true;
-    }),
-  body('entryID')
-    .exists()
-    .custom((value, {req}) => {
-      if (!(value >= 1)) {
-        throw new Error('EntryID is invalid');
       }
       return true;
     }),
