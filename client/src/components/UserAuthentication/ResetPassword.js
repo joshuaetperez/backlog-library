@@ -91,7 +91,6 @@ function ResetPassword() {
     }
 
     // Server-side form validation
-    errorState = createDefaultErrorState();
     try {
       const body = {newPassword, confirmationPassword};
       const response = await fetch(
@@ -153,6 +152,16 @@ function ResetPassword() {
     }
   };
 
+  const showErrorMessage = (error, errorMessage) => {
+    if (errorObj[error] === null) return null;
+    return (
+      <Form.Text className="form-error fs-6">
+        <span className="material-icons">error</span>
+        {errorMessages[errorMessage]}
+      </Form.Text>
+    );
+  };
+
   const resetPage = (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
       <Container className="bg-white my-sm-3 p-3 p-sm-5">
@@ -174,11 +183,9 @@ function ResetPassword() {
               }}
               required
             />
-            {errorObj['newPasswordLengthError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.newPasswordLengthErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'newPasswordLengthError',
+              'newPasswordLengthErrorMessage'
             )}
             {errorObj['newPasswordMatchesOldPasswordError'] !== null && (
               <Form.Text className="form-error fs-6">
@@ -202,17 +209,13 @@ function ResetPassword() {
               }}
               required
             />
-            {errorObj['confirmationPasswordLengthError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.confirmationPasswordLengthErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'confirmationPasswordLengthError',
+              'confirmationPasswordLengthErrorMessage'
             )}
-            {errorObj['confirmationPasswordNoMatchError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.confirmationPasswordNoMatchErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'confirmationPasswordNoMatchError',
+              'confirmationPasswordNoMatchErrorMessage'
             )}
           </Form.Group>
           <Button

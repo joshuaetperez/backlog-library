@@ -1,16 +1,17 @@
 const pool = require('./db');
+const bcrpyt = require('bcrypt');
 
 // Returns user object if given email is active
 async function getUserByEmail(email) {
   try {
-    const response = await pool.query(
+    const result = await pool.query(
       'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
       [email]
     );
-    if (response.rowCount === 0) {
+    if (result.rows.length === 0) {
       return null;
     }
-    return response.rows[0];
+    return result.rows[0];
   } catch (err) {
     console.error(err.message);
   }
@@ -19,14 +20,13 @@ async function getUserByEmail(email) {
 // Returns user object if given user_id is active
 async function getUserByID(user_id) {
   try {
-    const response = await pool.query(
-      'SELECT * FROM users WHERE user_id = $1',
-      [user_id]
-    );
-    if (response.rowCount === 0) {
+    const result = await pool.query('SELECT * FROM users WHERE user_id = $1', [
+      user_id,
+    ]);
+    if (result.rows.length === 0) {
       return null;
     }
-    return response.rows[0];
+    return result.rows[0];
   } catch (err) {
     console.error(err.message);
   }
@@ -35,11 +35,11 @@ async function getUserByID(user_id) {
 // Returns all of user entries in an array
 async function getEntries(user_id) {
   try {
-    const response = await pool.query(
+    const result = await pool.query(
       'SELECT entry_id, category_id, status_id, priority_id, title, notes FROM entries WHERE user_id = $1',
       [user_id]
     );
-    return response.rows;
+    return result.rows;
   } catch (err) {
     console.error(err.message);
   }
@@ -48,11 +48,11 @@ async function getEntries(user_id) {
 // Returns true if the given email already exists, false otherwise
 async function checkEmailInUse(email) {
   try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1)',
+    const result = await pool.query(
+      'SELECT * FROM users WHERE LOWER(email) = LOWER($1)',
       [email]
     );
-    if (response.rows[0].total === '0') {
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
@@ -64,11 +64,11 @@ async function checkEmailInUse(email) {
 // Returns true if the given email has already been verified, false otherwise
 async function checkEmailVerification(email) {
   try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1) AND verified = TRUE',
+    const result = await pool.query(
+      'SELECT * FROM users WHERE LOWER(email) = LOWER($1) AND verified = TRUE',
       [email]
     );
-    if (response.rows[0].total === '0') {
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
@@ -80,11 +80,11 @@ async function checkEmailVerification(email) {
 // Returns true if the given email has already been verified, false otherwise
 async function checkEmailNotVerified(email) {
   try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE LOWER(email) = LOWER($1) AND verified = FALSE',
+    const result = await pool.query(
+      'SELECT * FROM users WHERE LOWER(email) = LOWER($1) AND verified = FALSE',
       [email]
     );
-    if (response.rows[0].total === '0') {
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
@@ -97,11 +97,11 @@ async function checkEmailNotVerified(email) {
 async function checkTitleInUse(title, category_id, user_id) {
   if (!(category_id >= 1 && category_id <= 6)) return null;
   try {
-    const response = await pool.query(
-      `SELECT COUNT(*) AS total FROM entries WHERE LOWER(title) = LOWER($1) AND user_id = $2 AND category_id = $3`,
+    const result = await pool.query(
+      `SELECT * FROM entries WHERE LOWER(title) = LOWER($1) AND user_id = $2 AND category_id = $3`,
       [title, user_id, category_id]
     );
-    if (response.rows[0].total === '0') {
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
@@ -114,14 +114,32 @@ async function checkTitleInUse(title, category_id, user_id) {
 async function checkToken(token) {
   if (token === '' || token === null) return false;
   try {
-    const response = await pool.query(
-      'SELECT COUNT(*) AS total FROM users WHERE token = $1',
-      [token]
-    );
-    if (response.rows[0].total === '0') {
+    const result = await pool.query('SELECT * FROM users WHERE token = $1', [
+      token,
+    ]);
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
+  } catch (err) {
+    console.log(err.message);
+  }
+}
+
+// Returns true if the given password belongs to the user, false otherwise
+async function checkPassword(user_id, password) {
+  try {
+    const result = await pool.query(
+      'SELECT password FROM users WHERE user_id = $1',
+      [user_id]
+    );
+    if (
+      result.rows.length !== 0 &&
+      (await bcrpyt.compare(password, result.rows[0].password))
+    ) {
+      return true;
+    }
+    return false;
   } catch (err) {
     console.log(err.message);
   }
@@ -131,11 +149,11 @@ async function checkToken(token) {
 async function checkEditedTitleInUse(title, category_id, user_id, entry_id) {
   if (!(category_id >= 1 && category_id <= 6)) return null;
   try {
-    const response = await pool.query(
-      `SELECT COUNT(*) AS total FROM entries WHERE LOWER(title) = LOWER($1) AND user_id = $2 AND category_id = $3 AND entry_id != $4`,
+    const result = await pool.query(
+      `SELECT * FROM entries WHERE LOWER(title) = LOWER($1) AND user_id = $2 AND category_id = $3 AND entry_id != $4`,
       [title, user_id, category_id, entry_id]
     );
-    if (response.rows[0].total === '0') {
+    if (result.rows.length === 0) {
       return false;
     }
     return true;
@@ -151,7 +169,8 @@ module.exports = {
   checkEmailInUse,
   checkEmailVerification,
   checkEmailNotVerified,
-  checkTitleInUse,
   checkToken,
+  checkPassword,
+  checkTitleInUse,
   checkEditedTitleInUse,
 };

@@ -4,10 +4,9 @@ const {getUserByID, checkEditedTitleInUse} = require('../helpers');
 const editEntrySchema = [
   param('entryID')
     .exists()
-    .toInt()
     .custom((value, {req}) => {
       if (!(value >= 1)) {
-        throw new Error('EntryID is invalid');
+        throw new Error('entryID is invalid');
       }
       return true;
     }),

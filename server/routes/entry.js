@@ -4,6 +4,8 @@ const {getEntries} = require('../helpers');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 const addEntrySchema = require('../schema/add-entry-schema');
 const editEntrySchema = require('../schema/edit-entry-scheme');
+const deleteEntrySchema = require('../schema/delete-entry-schema');
+const deleteEntriesSchema = require('../schema/delete-entries-schema');
 
 const modalEntryRouter = express.Router();
 
@@ -56,15 +58,46 @@ modalEntryRouter.get('/get-entries', async (req, res) => {
 });
 
 // Deletes an entry with the given entry_id
-modalEntryRouter.delete('/delete-entry/:entryID', async (req, res) => {
-  try {
-    await pool.query('DELETE FROM entries WHERE entry_id = $1', [
-      req.params.entryID,
-    ]);
-    res.send('Entry deleted successfully');
-  } catch (err) {
-    console.error(err.message);
+modalEntryRouter.delete(
+  '/delete-entry/:entryID',
+  deleteEntrySchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      await pool.query('DELETE FROM entries WHERE entry_id = $1', [
+        req.params.entryID,
+      ]);
+      res.send('Entry deleted successfully');
+    } catch (err) {
+      console.error(err.message);
+    }
   }
-});
+);
+
+// Deletes all entries of a user by the given category
+// If entryID is 0, delete ALL entries of the user
+modalEntryRouter.delete(
+  '/delete-entries/:userID/:categoryID',
+  deleteEntriesSchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      const userID = req.params.userID;
+      const categoryID = req.params.categoryID;
+      if (categoryID === '0') {
+        await pool.query('DELETE FROM entries WHERE user_id = $1', [userID]);
+      } else {
+        await pool.query(
+          'DELETE FROM entries WHERE user_id = $1 AND category_id = $2',
+          [userID, categoryID]
+        );
+      }
+
+      res.send('Entries deleted successfully');
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+);
 
 module.exports = modalEntryRouter;

@@ -31,7 +31,7 @@ signupRouter.post(
       const hashedPassword = await bcrpyt.hash(password, 10);
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const response = await pool.query(
+      const result = await pool.query(
         'INSERT INTO users (email, password, token, token_timestamptz) VALUES($1, $2, $3, $4) RETURNING *',
         [email, hashedPassword, token, now]
       );
@@ -57,7 +57,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(response.rows[0]);
+      res.json(result.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -74,7 +74,7 @@ signupRouter.post(
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const response = await pool.query(
+      const result = await pool.query(
         'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
         [token, now, email]
       );
@@ -100,7 +100,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(response.rows[0]);
+      res.json(result.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -116,7 +116,7 @@ signupRouter.post(
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const response = await pool.query(
+      const result = await pool.query(
         'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
         [token, now, email]
       );
@@ -144,7 +144,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(response.rows[0]);
+      res.json(result.rows[0]);
     } catch (err) {
       console.error(err.message);
     }
@@ -159,15 +159,14 @@ signupRouter.post(
     try {
       const {newPassword} = req.body;
       const token = req.params.token;
-      const now = new Date();
-      const tokenResponse = await pool.query(
+      const tokenResult = await pool.query(
         'SELECT * FROM users WHERE token = $1',
         [token]
       );
-      if (tokenResponse.rows.length === 0) {
+      if (tokenResult.rows.length === 0) {
         return res.send('Reset Password failed: Invalid token');
       } else if (
-        await bcrpyt.compare(newPassword, tokenResponse.rows[0].password)
+        await bcrpyt.compare(newPassword, tokenResult.rows[0].password)
       ) {
         return res.send(
           'Reset Password failed: New password cannot be the same as your old password'
@@ -178,17 +177,17 @@ signupRouter.post(
       // If the link has expired, the token should no longer work
       if (
         tokenTimeLimit <
-        timeNow - tokenResponse.rows[0].token_timestamptz.getTime()
+        timeNow - tokenResult.rows[0].token_timestamptz.getTime()
       ) {
         return res.send('Reset Password failed: Expired token');
       }
 
       const hashedPassword = await bcrpyt.hash(newPassword, 10);
-      const updateResponse = await pool.query(
+      const updateResult = await pool.query(
         'UPDATE users SET (password, token, token_timestamptz) = ($1, null, null) WHERE token = $2 RETURNING email',
         [hashedPassword, token]
       );
-      const email = updateResponse.rows[0].email;
+      const email = updateResult.rows[0].email;
 
       const output = `
         <h3>Password Reset Confirmation</h3>

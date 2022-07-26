@@ -58,7 +58,6 @@ function Signup() {
     }
 
     // Server-side form validation
-    errorState = createDefaultErrorState();
     try {
       const body = {email, password, confirmationPassword};
       const response = await fetch('http://localhost:5000/signup', {
