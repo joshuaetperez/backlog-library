@@ -25,6 +25,8 @@ loginRouter.delete('/logout', (req, res) => {
     if (err) {
       return next(err);
     }
+    req.session.destroy();
+    res.clearCookie('connect.sid');
     res.send('Logged out successfully!');
   });
 });

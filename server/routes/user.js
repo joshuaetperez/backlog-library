@@ -76,6 +76,14 @@ userRouter.delete(
   validateRequestSchema,
   async (req, res) => {
     try {
+      req.logOut((err) => {
+        if (err) {
+          return next(err);
+        }
+        req.session.destroy();
+        res.clearCookie('connect.sid');
+      });
+
       const userID = req.params.userID;
       await pool.query('DELETE FROM entries WHERE user_id = $1', [userID]);
       const result = await pool.query(
@@ -83,7 +91,6 @@ userRouter.delete(
         [userID]
       );
       const email = result.rows[0].email;
-      req.session.destroy();
 
       const output = `
         <h3>Account Deletion Confirmation</h3>
