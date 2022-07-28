@@ -20,7 +20,6 @@ loginRouter.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// Logs out user and redirects user to login page
 loginRouter.delete('/logout', (req, res) => {
   req.logOut(function (err) {
     if (err) {

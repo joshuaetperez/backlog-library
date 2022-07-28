@@ -92,7 +92,7 @@ function ConfirmPasswordForm(props) {
         <Form.Control
           type="password"
           value={password}
-          placeholder="Current password"
+          placeholder="Confirm password"
           onChange={(e) => {
             setPassword(e.target.value);
             setErrorObj({
@@ -115,7 +115,6 @@ function ConfirmPasswordForm(props) {
 }
 
 function ConfirmPasswordModal(props) {
-  console.log(props.modalData);
   if (props.modalData === null) return;
   return (
     <Modal

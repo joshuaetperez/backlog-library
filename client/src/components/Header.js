@@ -22,7 +22,7 @@ function Header() {
     }
   };
 
-  const isUserLoggedIn = useContext(myContext);
+  const user = useContext(myContext);
   return (
     <Navbar bg="info">
       <Container>
@@ -30,9 +30,9 @@ function Header() {
           Backlog Library
         </Navbar.Brand>
         {/* If on loading screen, don't show navbar buttons */}
-        {isUserLoggedIn !== undefined && (
+        {user !== undefined && (
           <Stack direction="horizontal" gap={2} className="text-nowrap">
-            {isUserLoggedIn ? (
+            {user ? (
               <>
                 <DropdownButton
                   variant="primary"

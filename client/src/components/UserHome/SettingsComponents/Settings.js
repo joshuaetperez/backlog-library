@@ -24,26 +24,20 @@ function Settings() {
   // Alert
   const [alert, setAlert] = useState(null);
   useEffect(() => {
-    const alertStates = [
-      'Change Email',
-      'Change Password',
-      'Delete Entries',
-      'Delete Account',
-    ];
+    const alertStates = ['Change Email', 'Change Password', 'Delete Entries'];
     if (alertStates.includes(alert)) {
       setTimeout(() => setAlert(null), 5000);
     }
   }, [alert]);
 
-  const changeEmail = () => {};
-  const changePassword = () => {};
+  const changeEmail = async () => {};
+  const changePassword = async () => {};
   const deleteEntries = async () => {
     try {
       await fetch(
         `http://localhost:5000/delete-entries/${user.userID}/${deleteCategoryID}`,
         {
           method: 'DELETE',
-          headers: {'Content-Type': 'application/json'},
           credentials: 'include',
         }
       );
@@ -52,7 +46,18 @@ function Settings() {
       console.error(err);
     }
   };
-  const deleteAccount = () => {};
+  const deleteAccount = async () => {
+    try {
+      console.log(user);
+      await fetch(`http://localhost:5000/user/delete-account/${user.userID}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+      window.location = '/';
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const onButtonClick = (e, action) => {
     e.preventDefault();
@@ -74,11 +79,24 @@ function Settings() {
         },
       });
     } else if (action === 'Delete Account') {
+      setModal(true);
+      setModalData({
+        title: 'Delete Account',
+        bodyText:
+          'Please enter your password to confirm deletion of your account.',
+        buttonText: 'Delete my account',
+        onConfirmation: () => {
+          deleteAccount();
+          setModal(null);
+        },
+      });
     }
   };
 
   const alertText = () => {
-    if (alert === 'Delete Entries')
+    if (alert === 'Change Email') {
+    } else if (alert === 'Change Password') {
+    } else if (alert === 'Delete Entries')
       return `${
         deleteCategoryID === 0
           ? 'All entries have been deleted successfully!'
@@ -86,7 +104,15 @@ function Settings() {
               typeArray[deleteCategoryID - 1]
             } category have been deleted successfully!`
       }`;
-    return null;
+    else if (alert === 'Delete Entries')
+      return `${
+        deleteCategoryID === 0
+          ? 'All entries have been deleted successfully!'
+          : `All entries in the ${
+              typeArray[deleteCategoryID - 1]
+            } category have been deleted successfully!`
+      }`;
+    return 'Something successfully happened...';
   };
 
   return (
@@ -109,7 +135,7 @@ function Settings() {
 
         {/* Change Email */}
         <Container className="p-0 mb-md-5 mb-4">
-          <Form onSubmit={() => onButtonClick('Change Email')}>
+          <Form onSubmit={(e) => onButtonClick(e, 'Change Email')}>
             <Form.Group as={Row} className="mb-3" controlId="new-email">
               <Form.Label column md={3} className="fw-bold">
                 Change Email
@@ -139,7 +165,7 @@ function Settings() {
 
         {/* Change Password */}
         <Container className="p-0 mb-5">
-          <Form onSubmit={() => onButtonClick('Change Password')}>
+          <Form onSubmit={(e) => onButtonClick(e, 'Change Password')}>
             <Form.Group as={Row} className="mb-3" controlId="new-password">
               <Form.Label column md={3} className="fw-bold">
                 Change Password
@@ -247,7 +273,7 @@ function Settings() {
               <Button
                 type="button"
                 variant="danger"
-                onClick={() => onButtonClick('Delete Account')}
+                onClick={(e) => onButtonClick(e, 'Delete Account')}
               >
                 Delete User Account
               </Button>

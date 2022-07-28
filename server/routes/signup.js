@@ -1,8 +1,8 @@
 const express = require('express');
 const pool = require('../db');
 const bcrpyt = require('bcrypt');
-const nodemailer = require('nodemailer');
 const crypto = require('crypto');
+const transporter = require('../email_helpers');
 const registerSchema = require('../schema/register-schema');
 const reverifySchema = require('../schema/reverify-schema');
 const forgotPasswordSchema = require('../schema/forgot-password-schema');
@@ -11,14 +11,6 @@ const validateRequestSchema = require('../middlewares/validate-request-schema');
 const tokenTimeLimit = process.env.TOKEN_TIME_LIMIT;
 
 const signupRouter = express.Router();
-
-const transporter = nodemailer.createTransport({
-  service: 'Gmail',
-  auth: {
-    user: 'backloglibrary@gmail.com',
-    pass: process.env.BACKLOG_EMAIL_PW,
-  },
-});
 
 // Validates form info and inserts user account info into the database if criteria is met
 signupRouter.post(
@@ -107,6 +99,7 @@ signupRouter.post(
   }
 );
 
+// Sends email to user containing a link to change password
 signupRouter.post(
   '/forgot-password',
   forgotPasswordSchema,
@@ -151,6 +144,7 @@ signupRouter.post(
   }
 );
 
+// Changes user password if token is still valid
 signupRouter.post(
   '/reset-password/:token',
   resetPasswordSchema,

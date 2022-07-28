@@ -2,7 +2,7 @@ import {createContext, useEffect, useState} from 'react';
 
 export const myContext = createContext();
 export default function Context(props) {
-  const [user, setUser] = useState();
+  const [user, setUser] = useState(undefined);
 
   // Set user in state to be used in other components
   useEffect(() => {
@@ -14,7 +14,7 @@ export default function Context(props) {
         const jsonData = await response.json();
         setUser(jsonData);
       } catch (err) {
-        // If req.user is undefined, user is not logged in
+        // If req.user is null, user is not logged in
         setUser(null);
       }
     };
