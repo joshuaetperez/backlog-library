@@ -51,7 +51,7 @@ modalEntryRouter.put(
 modalEntryRouter.get('/get-entries', async (req, res) => {
   try {
     const entries = await getEntries(req.user.userID);
-    res.send(entries);
+    res.json(entries);
   } catch (err) {
     console.error(err.message);
   }
@@ -67,7 +67,7 @@ modalEntryRouter.delete(
       await pool.query('DELETE FROM entries WHERE entry_id = $1', [
         req.params.entryID,
       ]);
-      res.send('Entry deleted successfully');
+      res.json({message: 'Entry deleted successfully'});
     } catch (err) {
       console.error(err.message);
     }
@@ -93,7 +93,7 @@ modalEntryRouter.delete(
         );
       }
 
-      res.send('Entries deleted successfully');
+      res.json({message: 'Entries deleted successfully'});
     } catch (err) {
       console.error(err.message);
     }

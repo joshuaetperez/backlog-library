@@ -40,7 +40,7 @@ function Signup() {
     e.preventDefault();
 
     // Client-side form validation
-    let errorState = createDefaultErrorState();
+    const errorState = createDefaultErrorState();
     if (password.length < 6) errorState.passwordLengthError = true;
     if (confirmationPassword.length < 6)
       errorState.confirmationPasswordLengthError = true;
@@ -98,6 +98,16 @@ function Signup() {
     }
   };
 
+  const showErrorMessage = (error, errorMessage) => {
+    if (errorObj[error] === null) return null;
+    return (
+      <Form.Text className="form-error fs-6">
+        <span className="material-icons">error</span>
+        {errorMessages[errorMessage]}
+      </Form.Text>
+    );
+  };
+
   return (
     <div className="bg-light d-flex flex-column flex-grow-1 py-3">
       {signupSuccess && (
@@ -128,12 +138,7 @@ function Signup() {
               }}
               required
             />
-            {errorObj['emailExistsError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.emailExistsErrorMessage}
-              </Form.Text>
-            )}
+            {showErrorMessage('emailExistsError', 'emailExistsErrorMessage')}
           </Form.Group>
           <Form.Group className="mb-3" controlId="password">
             <Form.Label>Password</Form.Label>
@@ -150,11 +155,9 @@ function Signup() {
               }}
               required
             />
-            {errorObj['passwordLengthError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.passwordLengthErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'passwordLengthError',
+              'passwordLengthErrorMessage'
             )}
           </Form.Group>
           <Form.Group className="mb-3" controlId="confirm-password">
@@ -172,17 +175,13 @@ function Signup() {
               }}
               required
             />
-            {errorObj['confirmationPasswordLengthError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.confirmationPasswordLengthErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'confirmationPasswordLengthError',
+              'confirmationPasswordLengthErrorMessage'
             )}
-            {errorObj['confirmationPasswordNoMatchError'] !== null && (
-              <Form.Text className="form-error fs-6">
-                <span className="material-icons">error</span>
-                {errorMessages.confirmationPasswordNoMatchErrorMessage}
-              </Form.Text>
+            {showErrorMessage(
+              'confirmationPasswordNoMatchError',
+              'confirmationPasswordNoMatchErrorMessage'
             )}
           </Form.Group>
           <Button

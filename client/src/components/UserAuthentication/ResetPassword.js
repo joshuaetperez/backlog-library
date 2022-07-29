@@ -43,7 +43,8 @@ function ResetPassword() {
           }
         );
         if (response.status === 200) {
-          const responseText = await response.text();
+          const jsonData = await response.json();
+          const responseText = jsonData.message;
           if (responseText === 'Valid token') {
             setTokenStatus('Valid');
           } else if (responseText === 'Expired token') {
@@ -73,7 +74,7 @@ function ResetPassword() {
     e.preventDefault();
 
     // Client-side form validation
-    let errorState = createDefaultErrorState();
+    const errorState = createDefaultErrorState();
     if (newPassword.length < 6) errorState.newPasswordLengthError = true;
     if (confirmationPassword.length < 6)
       errorState.confirmationPasswordLengthError = true;
@@ -103,7 +104,8 @@ function ResetPassword() {
         }
       );
       if (response.status === 200) {
-        const responseText = await response.text();
+        const jsonData = await response.json();
+        const responseText = jsonData.message;
         if (responseText === 'Reset Password failed: Invalid token') {
           setTokenStatus('Invalid');
           setResetSuccess(false);

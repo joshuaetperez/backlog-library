@@ -23,7 +23,7 @@ function ConfirmPasswordForm(props) {
     e.preventDefault();
 
     // Client-side form validation
-    let errorState = createDefaultErrorState();
+    const errorState = createDefaultErrorState();
     if (password.length < 6) errorState.passwordLengthError = true;
 
     // If there is at least one of the following errors, display error messages on the form without making a server request
@@ -46,7 +46,8 @@ function ConfirmPasswordForm(props) {
       );
 
       if (response.status === 200) {
-        const responseText = await response.text();
+        const jsonData = await response.json();
+        const responseText = jsonData.message;
         if (responseText === 'Password is correct') {
           props.onConfirmation();
         } else if (responseText === 'Password is incorrect') {

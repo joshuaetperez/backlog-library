@@ -1,8 +1,10 @@
 const express = require('express');
 const pool = require('../db');
+const bcrpyt = require('bcrypt');
 const transporter = require('../email_helpers');
 const {checkPassword} = require('../helpers');
 const confirmPasswordSchema = require('../schema/confirm-password-schema');
+const resetPasswordSchema = require('../schema/reset-password-schema');
 const deleteAccountSchema = require('../schema/delete-account-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 
@@ -41,16 +43,16 @@ userRouter.get('/user/check-token/:token', async (req, res) => {
       [token]
     );
     if (result.rows.length === 0) {
-      return res.send('Invalid token');
+      return res.json({message: 'Invalid token'});
     }
 
     const timeNow = new Date().getTime();
     // If the link has expired, the token should no longer work
     if (tokenTimeLimit < timeNow - result.rows[0].token_timestamptz.getTime()) {
-      return res.send('Expired token');
+      return res.json({message: 'Expired token'});
     }
     // If the link has NOT expired, the token is considered valid
-    res.send('Valid token');
+    res.json({message: 'Valid token'});
   } catch (err) {
     console.error(err.message);
   }
@@ -63,9 +65,64 @@ userRouter.post(
   validateRequestSchema,
   async (req, res) => {
     if (await checkPassword(req.user.userID, req.body.password)) {
-      return res.send('Password is correct');
+      return res.json({message: 'Password is correct'});
     }
-    res.send('Password is incorrect');
+    res.json({message: 'Password is incorrect'});
+  }
+);
+
+// Changes password of the user
+userRouter.post(
+  '/user/change-password',
+  resetPasswordSchema,
+  validateRequestSchema,
+  async (req, res) => {
+    const userID = req.user.userID;
+    const {newPassword} = req.body;
+    const passwordResult = await pool.query(
+      'SELECT password FROM users WHERE user_id = $1',
+      [userID]
+    );
+    if (passwordResult.rows.length === 0) {
+      return res.json({message: 'Change Password failed: No user found'});
+    } else if (
+      await bcrpyt.compare(newPassword, passwordResult.rows[0].password)
+    ) {
+      return res.json({
+        message:
+          'Change Password failed: New password cannot be the same as your old password',
+      });
+    }
+
+    const hashedPassword = await bcrpyt.hash(newPassword, 10);
+    const updateResult = await pool.query(
+      'UPDATE users SET password = $1 WHERE user_id = $2 RETURNING email',
+      [hashedPassword, userID]
+    );
+    const email = updateResult.rows[0].email;
+
+    const output = `
+        <h3>Password Change Confirmation</h3>
+        <p>We are sending this email to confirm that you have successfully changed your password to this account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
+      `;
+    transporter.sendMail(
+      {
+        from: '"Backlog Library" <backloglibrary@gmail.com>',
+        to: email,
+        subject: 'Password Change Confirmation',
+        html: output,
+      },
+      (err, info) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('Message sent: %s', info.messageId);
+        }
+      }
+    );
+
+    res.json({message: 'Password has been changed successfully!'});
   }
 );
 
@@ -113,7 +170,7 @@ userRouter.delete(
         }
       );
 
-      res.send('Account has been successfully deleted!');
+      res.json({message: 'Account has been successfully deleted!'});
     } catch (err) {
       console.error(err.message);
     }

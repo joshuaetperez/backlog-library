@@ -9,13 +9,36 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+function createDefaultErrorState() {
+  return {
+    newEmailMatchesCurrentEmailError: null,
+    newPasswordLengthError: null,
+    newPasswordMatchesCurrentPasswordError: null,
+    confirmationPasswordLengthError: null,
+    confirmationPasswordNoMatchError: null,
+  };
+}
+
+const errorMessages = {
+  newEmailMatchesCurrentEmailErrorMessage:
+    'Email address cannot be the same as your current email',
+  newPasswordLengthErrorMessage: 'Password must contain at least 6 characters',
+  newPasswordMatchesCurrentPasswordErrorMessage:
+    'New password cannot be the same as your current password',
+  confirmationPasswordLengthErrorMessage:
+    'Confirmation password must contain at least 6 characters',
+  confirmationPasswordNoMatchErrorMessage:
+    'Confirmation password does not match password',
+};
+
 function Settings() {
   const user = useContext(myContext);
 
   const [email, setEmail] = useState(user.email);
   const [newPassword, setNewPassword] = useState('');
-  const [confirmNewPassword, setConfirmNewPassword] = useState('');
+  const [confirmationPassword, setConfirmationPassword] = useState('');
   const [deleteCategoryID, setDeleteCategoryID] = useState(-1);
+  const [errorObj, setErrorObj] = useState(createDefaultErrorState());
 
   // Modal
   const [modal, setModal] = useState(null);
@@ -23,15 +46,80 @@ function Settings() {
 
   // Alert
   const [alert, setAlert] = useState(null);
+  const [alertError, setAlertError] = useState(null);
   useEffect(() => {
     const alertStates = ['Change Email', 'Change Password', 'Delete Entries'];
     if (alertStates.includes(alert)) {
-      setTimeout(() => setAlert(null), 5000);
+      setTimeout(() => {
+        setAlert(null);
+        setAlertError(null);
+      }, 5000);
     }
-  }, [alert]);
+  }, [alert, alertError]);
 
   const changeEmail = async () => {};
-  const changePassword = async () => {};
+  const changePassword = async () => {
+    try {
+      const body = {newPassword, confirmationPassword};
+      const response = await fetch(
+        'http://localhost:5000/user/change-password/',
+        {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify(body),
+          credentials: 'include',
+        }
+      );
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        const responseText = jsonData.message;
+        if (
+          responseText ===
+          'Change Password failed: New password cannot be the same as your old password'
+        ) {
+          setErrorObj({
+            ...errorObj,
+            newPasswordMatchesCurrentPasswordError: true,
+          });
+          setAlert('Change Password');
+          setAlertError(true);
+        } else if (responseText === 'Password has been changed successfully!') {
+          await fetch('http://localhost:5000/logout', {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+          window.location = '/login';
+        } else {
+          console.log('Something went wrong');
+        }
+      } else if (response.status === 400) {
+        const jsonData = await response.json();
+        const errorArray = jsonData.errors;
+        // If there is at least one of the following errors, display error messages on the form
+        const errorState = createDefaultErrorState();
+        for (const error of errorArray) {
+          switch (error.msg) {
+            case errorMessages.newPasswordLengthErrorMessage:
+              errorState.newPasswordLengthError = true;
+              break;
+            case errorMessages.confirmationPasswordLengthErrorMessage:
+              errorState.confirmationPasswordLengthError = true;
+              break;
+            case errorMessages.confirmationPasswordNoMatchErrorMessage:
+              errorState.confirmationPasswordNoMatchError = true;
+              break;
+            default:
+              break;
+          }
+        }
+        setErrorObj(errorState);
+      } else {
+        console.error('Something went wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const deleteEntries = async () => {
     try {
       await fetch(
@@ -63,6 +151,35 @@ function Settings() {
     e.preventDefault();
     if (action === 'Change Email') {
     } else if (action === 'Change Password') {
+      // Client-side form validation
+      const errorState = createDefaultErrorState();
+      if (newPassword.length < 6) errorState.newPasswordLengthError = true;
+      if (confirmationPassword.length < 6)
+        errorState.confirmationPasswordLengthError = true;
+      if (newPassword !== confirmationPassword)
+        errorState.confirmationPasswordNoMatchError = true;
+
+      // If there is at least one of the following errors, display error messages on the form
+      if (
+        errorState.newPasswordLengthError === true ||
+        errorState.confirmationPasswordLengthError === true ||
+        errorState.confirmationPasswordNoMatchError === true
+      ) {
+        setErrorObj(errorState);
+        return;
+      }
+
+      setModal(true);
+      setModalData({
+        title: 'Change Password',
+        bodyText:
+          'Please enter your current password to confirm changing to a new password. You will be logged out if password change is successful.',
+        buttonText: 'Change password',
+        onConfirmation: () => {
+          changePassword();
+          setModal(null);
+        },
+      });
     } else if (action === 'Delete Entries') {
       setModal(true);
       setModalData({
@@ -93,10 +210,31 @@ function Settings() {
     }
   };
 
+  const displayAlert = () => {
+    if (alert === null) return null;
+    if (alertError === true) {
+      return (
+        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
+          <Alert variant="danger" onClose={() => setAlert(null)} dismissible>
+            <p className="m-0 text-center">{alertText()}</p>
+          </Alert>
+        </Container>
+      );
+    }
+    return (
+      <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
+        <Alert variant="success" onClose={() => setAlert(null)} dismissible>
+          <p className="m-0 text-center">{alertText()}</p>
+        </Alert>
+      </Container>
+    );
+  };
+
   const alertText = () => {
     if (alert === 'Change Email') {
     } else if (alert === 'Change Password') {
-    } else if (alert === 'Delete Entries')
+      return `Password change failed: ${errorMessages.newPasswordMatchesCurrentPasswordErrorMessage}.`;
+    } else if (alert === 'Delete Entries') {
       return `${
         deleteCategoryID === 0
           ? 'All entries have been deleted successfully!'
@@ -104,15 +242,18 @@ function Settings() {
               typeArray[deleteCategoryID - 1]
             } category have been deleted successfully!`
       }`;
-    else if (alert === 'Delete Entries')
-      return `${
-        deleteCategoryID === 0
-          ? 'All entries have been deleted successfully!'
-          : `All entries in the ${
-              typeArray[deleteCategoryID - 1]
-            } category have been deleted successfully!`
-      }`;
-    return 'Something successfully happened...';
+    }
+    return 'Something unexpected happened...';
+  };
+
+  const showErrorMessage = (error, errorMessage) => {
+    if (errorObj[error] === null) return null;
+    return (
+      <Form.Text className="form-error fs-6">
+        <span className="material-icons">error</span>
+        {errorMessages[errorMessage]}
+      </Form.Text>
+    );
   };
 
   return (
@@ -123,13 +264,7 @@ function Settings() {
         showAlert={(value) => setAlert(value)}
         modalData={modalData}
       />
-      {alert !== null && (
-        <Container className="alert-container position-fixed start-50 translate-middle mt-sm-3">
-          <Alert variant="success" onClose={() => setAlert(null)} dismissible>
-            <p className="m-0 text-center">{alertText()}</p>
-          </Alert>
-        </Container>
-      )}
+      {displayAlert()}
       <Container className="bg-white my-sm-3 p-3 p-sm-5">
         <h3 className="mb-5">User Settings</h3>
 
@@ -176,10 +311,24 @@ function Settings() {
                   placeholder="New password"
                   value={newPassword}
                   onChange={(e) => {
+                    setErrorObj({
+                      ...errorObj,
+                      newPasswordLengthError: null,
+                      newPasswordMatchesCurrentPasswordError: null,
+                      confirmationPasswordNoMatchError: null,
+                    });
                     setNewPassword(e.target.value);
                   }}
                   required
                 />
+                {showErrorMessage(
+                  'newPasswordLengthError',
+                  'newPasswordLengthErrorMessage'
+                )}
+                {showErrorMessage(
+                  'newPasswordMatchesCurrentPasswordError',
+                  'newPasswordMatchesCurrentPasswordErrorMessage'
+                )}
               </Col>
             </Form.Group>
             <Form.Group
@@ -192,12 +341,25 @@ function Settings() {
                 <Form.Control
                   type="password"
                   placeholder="Confirm new password"
-                  value={confirmNewPassword}
+                  value={confirmationPassword}
                   onChange={(e) => {
-                    setConfirmNewPassword(e.target.value);
+                    setErrorObj({
+                      ...errorObj,
+                      confirmationPasswordLengthError: null,
+                      confirmationPasswordNoMatchError: null,
+                    });
+                    setConfirmationPassword(e.target.value);
                   }}
                   required
                 />
+                {showErrorMessage(
+                  'confirmationPasswordLengthError',
+                  'confirmationPasswordLengthErrorMessage'
+                )}
+                {showErrorMessage(
+                  'confirmationPasswordNoMatchError',
+                  'confirmationPasswordNoMatchErrorMessage'
+                )}
               </Col>
             </Form.Group>
             <Row>

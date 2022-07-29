@@ -23,7 +23,8 @@ function Login() {
         credentials: 'include',
       });
       if (response.status === 200) {
-        const responseText = await response.text();
+        const jsonData = await response.json();
+        const responseText = jsonData.message;
         if (responseText === 'Login failed. Incorrect email or password.') {
           setLoginFailed(true);
         } else if (

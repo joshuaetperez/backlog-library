@@ -158,13 +158,14 @@ signupRouter.post(
         [token]
       );
       if (tokenResult.rows.length === 0) {
-        return res.send('Reset Password failed: Invalid token');
+        return res.json({message: 'Reset Password failed: Invalid token'});
       } else if (
         await bcrpyt.compare(newPassword, tokenResult.rows[0].password)
       ) {
-        return res.send(
-          'Reset Password failed: New password cannot be the same as your old password'
-        );
+        return res.json({
+          message:
+            'Reset Password failed: New password cannot be the same as your old password',
+        });
       }
 
       const timeNow = new Date().getTime();
@@ -173,7 +174,7 @@ signupRouter.post(
         tokenTimeLimit <
         timeNow - tokenResult.rows[0].token_timestamptz.getTime()
       ) {
-        return res.send('Reset Password failed: Expired token');
+        return res.json({message: 'Reset Password failed: Expired token'});
       }
 
       const hashedPassword = await bcrpyt.hash(newPassword, 10);
@@ -203,7 +204,7 @@ signupRouter.post(
           }
         }
       );
-      res.send('Reset Password successfully!');
+      res.json({message: 'Reset Password successfully!'});
     } catch (err) {
       console.error(err.message);
     }
