@@ -34,7 +34,7 @@ function AddEntryForm(props) {
         title: title.trim(),
         notes,
       };
-      const response = await fetch('http://localhost:5000/add-entry', {
+      const response = await fetch('http://localhost:5000/user/add-entry', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

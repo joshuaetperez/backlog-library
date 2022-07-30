@@ -11,7 +11,6 @@ function DeleteEntryModal(props) {
     try {
       await fetch(`http://localhost:5000/delete-entry/${entryID}`, {
         method: 'DELETE',
-        credentials: 'include',
       });
       // If the random entry is being edited, update changes
       const randomEntry = props.modalData.randomEntry;

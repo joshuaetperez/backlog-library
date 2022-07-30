@@ -10,9 +10,10 @@ const initializePassport = require('./passport-config');
 const session = require('express-session');
 
 const loginRouter = require('./routes/login');
-const signupRouter = require('./routes/signup');
+const userAuthenticationRouter = require('./routes/user-authentication');
 const entryRouter = require('./routes/entry');
 const userRouter = require('./routes/user');
+const tokenRouter = require('./routes/token');
 
 initializePassport(passport);
 
@@ -30,9 +31,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 app.use(loginRouter);
-app.use(signupRouter);
+app.use(userAuthenticationRouter);
 app.use(entryRouter);
 app.use(userRouter);
+app.use(tokenRouter);
 
 const port = 5000;
 app.listen(port, () => {

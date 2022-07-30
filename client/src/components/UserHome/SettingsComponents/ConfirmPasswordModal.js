@@ -52,8 +52,6 @@ function ConfirmPasswordForm(props) {
           props.onConfirmation();
         } else if (responseText === 'Password is incorrect') {
           setErrorObj({...errorState, passwordIncorrectError: true});
-        } else {
-          console.log('Something went wrong');
         }
       } else if (response.status === 400) {
         const jsonData = await response.json();

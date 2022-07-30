@@ -12,6 +12,7 @@ import ForgotPassword from './components/UserAuthentication/ForgotPassword';
 import ResetPassword from './components/UserAuthentication/ResetPassword';
 import Settings from './components/UserHome/SettingsComponents/Settings';
 import CategoryPage from './components/UserHome/Category/CategoryPage';
+import ChangeEmailStatus from './components/UserAuthentication/ChangeEmailStatus';
 import Container from 'react-bootstrap/Container';
 import './style.css';
 
@@ -55,6 +56,10 @@ const RouteSwitch = () => {
                 element={<Navigate to="/" />}
               />
               <Route path="settings" element={<Settings />} />
+              <Route
+                path="change-email-status/:token"
+                element={<Navigate to="/" />}
+              />
             </>
           ) : (
             <>
@@ -71,6 +76,10 @@ const RouteSwitch = () => {
               <Route path="forgot-password" element={<ForgotPassword />} />
               <Route path="reset-password/:token" element={<ResetPassword />} />
               <Route path="settings" element={<Navigate to="/" />} />
+              <Route
+                path="change-email-status/:token"
+                element={<ChangeEmailStatus />}
+              />
             </>
           )}
         </Routes>

@@ -7,6 +7,7 @@ import Form from 'react-bootstrap/Form';
 
 function createDefaultErrorState() {
   return {
+    emailInvalidError: null,
     emailExistsError: null,
     passwordLengthError: null,
     confirmationPasswordLengthError: null,
@@ -15,6 +16,7 @@ function createDefaultErrorState() {
 }
 
 const errorMessages = {
+  emailInvalidErrorMessage: 'Email must be a valid email address',
   emailExistsErrorMessage: 'Email address is already in use',
   passwordLengthErrorMessage: 'Password must contain at least 6 characters',
   confirmationPasswordLengthErrorMessage:
@@ -64,7 +66,6 @@ function Signup() {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
-        credentials: 'include',
       });
       const jsonData = await response.json();
       const errorArray = jsonData.errors;
@@ -72,6 +73,9 @@ function Signup() {
       if (errorArray !== undefined) {
         for (const error of errorArray) {
           switch (error.msg) {
+            case errorMessages.emailInvalidErrorMessage:
+              errorState.emailInvalidError = true;
+              break;
             case errorMessages.emailExistsErrorMessage:
               errorState.emailExistsError = true;
               break;
@@ -138,6 +142,7 @@ function Signup() {
               }}
               required
             />
+            {showErrorMessage('emailInvalidError', 'emailInvalidErrorMessage')}
             {showErrorMessage('emailExistsError', 'emailExistsErrorMessage')}
           </Form.Group>
           <Form.Group className="mb-3" controlId="password">

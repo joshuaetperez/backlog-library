@@ -11,6 +11,8 @@ import Row from 'react-bootstrap/Row';
 
 function createDefaultErrorState() {
   return {
+    emailInvalidError: null,
+    emailExistsError: null,
     newEmailMatchesCurrentEmailError: null,
     newPasswordLengthError: null,
     newPasswordMatchesCurrentPasswordError: null,
@@ -20,8 +22,10 @@ function createDefaultErrorState() {
 }
 
 const errorMessages = {
+  emailInvalidErrorMessage: 'Email must be a valid email address',
+  emailExistsErrorMessage: 'Email address is already in use',
   newEmailMatchesCurrentEmailErrorMessage:
-    'Email address cannot be the same as your current email',
+    'New email address cannot be the same as your current email',
   newPasswordLengthErrorMessage: 'Password must contain at least 6 characters',
   newPasswordMatchesCurrentPasswordErrorMessage:
     'New password cannot be the same as your current password',
@@ -34,7 +38,8 @@ const errorMessages = {
 function Settings() {
   const user = useContext(myContext);
 
-  const [email, setEmail] = useState(user.email);
+  const currentEmail = user.email;
+  const [newEmail, setNewEmail] = useState(currentEmail);
   const [newPassword, setNewPassword] = useState('');
   const [confirmationPassword, setConfirmationPassword] = useState('');
   const [deleteCategoryID, setDeleteCategoryID] = useState(-1);
@@ -57,7 +62,69 @@ function Settings() {
     }
   }, [alert, alertError]);
 
-  const changeEmail = async () => {};
+  const changeEmail = async () => {
+    try {
+      const body = {newEmail};
+      const response = await fetch('http://localhost:5000/user/change-email/', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
+      if (response.status === 200) {
+        const jsonData = await response.json();
+        const responseText = jsonData.message;
+        if (
+          responseText ===
+          'Change Email failed: New email cannot be the same as your current email'
+        ) {
+          setErrorObj({
+            ...errorObj,
+            newEmailMatchesCurrentEmailError: true,
+          });
+          setAlert('Change Email');
+          setAlertError(true);
+        } else if (
+          responseText === 'Change Email failed: New email is already taken'
+        ) {
+          setErrorObj({
+            ...errorObj,
+            emailExistsError: true,
+          });
+          setAlert('Change Email');
+          setAlertError(true);
+        } else if (responseText === 'Received change email request') {
+          await fetch('http://localhost:5000/logout', {
+            method: 'DELETE',
+            credentials: 'include',
+          });
+          window.location = '/';
+        }
+      } else if (response.status === 400) {
+        const jsonData = await response.json();
+        const errorArray = jsonData.errors;
+        // If there is at least one of the following errors, display error messages on the form
+        const errorState = createDefaultErrorState();
+        for (const error of errorArray) {
+          switch (error.msg) {
+            case errorMessages.emailInvalidErrorMessage:
+              errorState.emailInvalidError = true;
+              break;
+            case errorMessages.newPasswordLengthErrorMessage:
+              errorState.newPasswordLengthError = true;
+              break;
+            default:
+              break;
+          }
+        }
+        setErrorObj(errorState);
+      } else {
+        console.error('Something went wrong');
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
   const changePassword = async () => {
     try {
       const body = {newPassword, confirmationPassword};
@@ -89,8 +156,6 @@ function Settings() {
             credentials: 'include',
           });
           window.location = '/login';
-        } else {
-          console.log('Something went wrong');
         }
       } else if (response.status === 400) {
         const jsonData = await response.json();
@@ -126,7 +191,6 @@ function Settings() {
         `http://localhost:5000/delete-entries/${user.userID}/${deleteCategoryID}`,
         {
           method: 'DELETE',
-          credentials: 'include',
         }
       );
       setAlert('Delete Entries');
@@ -137,9 +201,8 @@ function Settings() {
   const deleteAccount = async () => {
     try {
       console.log(user);
-      await fetch(`http://localhost:5000/user/delete-account/${user.userID}`, {
+      await fetch(`http://localhost:5000/delete-account/${user.userID}`, {
         method: 'DELETE',
-        credentials: 'include',
       });
       window.location = '/';
     } catch (err) {
@@ -150,6 +213,28 @@ function Settings() {
   const onButtonClick = (e, action) => {
     e.preventDefault();
     if (action === 'Change Email') {
+      // Client-side form validation
+      const errorState = createDefaultErrorState();
+      if (newEmail === currentEmail)
+        errorState.newEmailMatchesCurrentEmailError = true;
+
+      // If there is an errors, display error message on the form
+      if (errorState.newEmailMatchesCurrentEmailError === true) {
+        setErrorObj(errorState);
+        return;
+      }
+
+      setModal(true);
+      setModalData({
+        title: 'Change Email',
+        bodyText:
+          'Please enter your current password to confirm changing to a new email address. A verification email will be sent to your new email address which will contain a verification link that only lasts 24 hours.',
+        buttonText: 'Change email',
+        onConfirmation: () => {
+          changeEmail();
+          setModal(null);
+        },
+      });
     } else if (action === 'Change Password') {
       // Client-side form validation
       const errorState = createDefaultErrorState();
@@ -231,7 +316,13 @@ function Settings() {
   };
 
   const alertText = () => {
-    if (alert === 'Change Email') {
+    if (
+      alert === 'Change Email' &&
+      errorObj.newEmailMatchesCurrentEmailError === true
+    ) {
+      return `Email change failed: ${errorMessages.newEmailMatchesCurrentEmailErrorMessage}.`;
+    } else if (alert === 'Change Email' && errorObj.emailExistsError === true) {
+      return `Email change failed: ${errorMessages.emailExistsErrorMessage}.`;
     } else if (alert === 'Change Password') {
       return `Password change failed: ${errorMessages.newPasswordMatchesCurrentPasswordErrorMessage}.`;
     } else if (alert === 'Delete Entries') {
@@ -279,12 +370,28 @@ function Settings() {
                 <Form.Control
                   type="email"
                   placeholder="Email"
-                  value={email}
+                  value={newEmail}
                   onChange={(e) => {
-                    setEmail(e.target.value);
+                    setErrorObj({
+                      ...errorObj,
+                      newEmailMatchesCurrentEmailError: null,
+                    });
+                    setNewEmail(e.target.value);
                   }}
                   required
                 />
+                {showErrorMessage(
+                  'emailInvalidError',
+                  'emailInvalidErrorMessage'
+                )}
+                {showErrorMessage(
+                  'emailExistsError',
+                  'emailExistsErrorMessage'
+                )}
+                {showErrorMessage(
+                  'newEmailMatchesCurrentEmailError',
+                  'newEmailMatchesCurrentEmailErrorMessage'
+                )}
               </Col>
             </Form.Group>
             <Row>

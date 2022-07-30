@@ -25,6 +25,7 @@ const errorMessages = {
 };
 
 function ResetPassword() {
+  // "/reset-password/" is 16 characters long
   // eslint-disable-next-line no-unused-vars
   const [token, setToken] = useState(useLocation().pathname.substring(16));
   const [tokenStatus, setTokenStatus] = useState(null);
@@ -37,10 +38,7 @@ function ResetPassword() {
     async function checkToken() {
       try {
         const response = await fetch(
-          `http://localhost:5000/user/check-token/${token}`,
-          {
-            credentials: 'include',
-          }
+          `http://localhost:5000/check-token/${token}`
         );
         if (response.status === 200) {
           const jsonData = await response.json();
@@ -66,7 +64,7 @@ function ResetPassword() {
     if (resetSuccess) {
       setTimeout(() => {
         window.location = '/login';
-      }, 3000);
+      }, 5000);
     }
   }, [resetSuccess]);
 
@@ -100,7 +98,6 @@ function ResetPassword() {
           method: 'POST',
           headers: {'Content-Type': 'application/json'},
           body: JSON.stringify(body),
-          credentials: 'include',
         }
       );
       if (response.status === 200) {
@@ -123,8 +120,6 @@ function ResetPassword() {
           setResetSuccess(false);
         } else if (responseText === 'Reset Password successfully!') {
           setResetSuccess(true);
-        } else {
-          console.log('Something went wrong');
         }
       } else if (response.status === 400) {
         const jsonData = await response.json();

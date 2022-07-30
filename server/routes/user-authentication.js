@@ -2,18 +2,19 @@ const express = require('express');
 const pool = require('../db');
 const bcrpyt = require('bcrypt');
 const crypto = require('crypto');
-const transporter = require('../email_helpers');
+const transporter = require('../nodemailer_helpers');
 const registerSchema = require('../schema/register-schema');
 const reverifySchema = require('../schema/reverify-schema');
 const forgotPasswordSchema = require('../schema/forgot-password-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
+const deleteAccountSchema = require('../schema/delete-account-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
 const tokenTimeLimit = process.env.TOKEN_TIME_LIMIT;
 
-const signupRouter = express.Router();
+const userAuthenticationRouter = express.Router();
 
 // Validates form info and inserts user account info into the database if criteria is met
-signupRouter.post(
+userAuthenticationRouter.post(
   '/signup',
   registerSchema,
   validateRequestSchema,
@@ -30,7 +31,7 @@ signupRouter.post(
 
       const output = `
         <h3>New Account Verification</h3>
-        <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
+        <a href="http://localhost:5000/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
@@ -49,7 +50,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(result.rows[0]);
+      res.json({message: 'Registered successfully!'});
     } catch (err) {
       console.error(err.message);
     }
@@ -57,7 +58,7 @@ signupRouter.post(
 );
 
 // Validates email from form info and updates token and token_timestamptz of user
-signupRouter.post(
+userAuthenticationRouter.post(
   '/reverify',
   reverifySchema,
   validateRequestSchema,
@@ -73,7 +74,7 @@ signupRouter.post(
 
       const output = `
         <h3>Resent Email Verification</h3>
-        <a href="http://localhost:5000/user/verification/${token}">Please click here to verify your email account</a>
+        <a href="http://localhost:5000/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
@@ -92,7 +93,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(result.rows[0]);
+      res.json({message: 'Recieved reverification request'});
     } catch (err) {
       console.error(err.message);
     }
@@ -100,7 +101,7 @@ signupRouter.post(
 );
 
 // Sends email to user containing a link to change password
-signupRouter.post(
+userAuthenticationRouter.post(
   '/forgot-password',
   forgotPasswordSchema,
   validateRequestSchema,
@@ -109,12 +110,12 @@ signupRouter.post(
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const result = await pool.query(
-        'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
+      await pool.query(
+        'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3',
         [token, now, email]
       );
 
-      const resetLink = `<a href="http://localhost:5000/user/forgot-password/${token}" style='display: inline-block; background-color: #489be8; color: #FFFFFF; padding: 10px 20px; border: none; border-radius: 3px; text-decoration: none;'>Reset Password</a>`;
+      const resetLink = `<a href="http://localhost:5000/forgot-password/${token}" style='display: inline-block; background-color: #489be8; color: #FFFFFF; padding: 10px 20px; border: none; border-radius: 3px; text-decoration: none;'>Reset Password</a>`;
       const output = `
         <h3>Password Reset Request</h3>
         <p>We received your request for a password reset on this account. Click on the bottom below to reset your password.</p>
@@ -137,7 +138,7 @@ signupRouter.post(
           }
         }
       );
-      res.json(result.rows[0]);
+      res.json({message: 'Received reset password request'});
     } catch (err) {
       console.error(err.message);
     }
@@ -145,7 +146,7 @@ signupRouter.post(
 );
 
 // Changes user password if token is still valid
-signupRouter.post(
+userAuthenticationRouter.post(
   '/reset-password/:token',
   resetPasswordSchema,
   validateRequestSchema,
@@ -211,4 +212,90 @@ signupRouter.post(
   }
 );
 
-module.exports = signupRouter;
+// Verifies the user's account if the verification token is still valid
+userAuthenticationRouter.post('/change-email/:token', async (req, res) => {
+  try {
+    result = await pool.query(
+      'UPDATE users SET (email, new_email, token, token_timestamptz) = (new_email, null, null, null) WHERE token = $1 RETURNING email',
+      [req.params.token]
+    );
+    const email = result.rows[0].email;
+
+    const output = `
+        <h3>Email Change Confirmation</h3>
+        <p>We are sending this email to confirm that you have successfully changed your email to this account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
+      `;
+    transporter.sendMail(
+      {
+        from: '"Backlog Library" <backloglibrary@gmail.com>',
+        to: email,
+        subject: 'Email Change Confirmation',
+        html: output,
+      },
+      (err, info) => {
+        if (err) {
+          console.error(err);
+        } else {
+          console.log('Message sent: %s', info.messageId);
+        }
+      }
+    );
+    res.json({message: 'Password changed successfully!'});
+  } catch (err) {
+    console.error(err.message);
+  }
+});
+
+// Deletes account of given user_id
+userAuthenticationRouter.delete(
+  '/delete-account/:userID',
+  deleteAccountSchema,
+  validateRequestSchema,
+  async (req, res) => {
+    try {
+      req.logOut((err) => {
+        if (err) {
+          return next(err);
+        }
+        req.session.destroy();
+        res.clearCookie('connect.sid');
+      });
+
+      const userID = req.params.userID;
+      await pool.query('DELETE FROM entries WHERE user_id = $1', [userID]);
+      const result = await pool.query(
+        'DELETE FROM users WHERE user_id = $1 RETURNING email',
+        [userID]
+      );
+      const email = result.rows[0].email;
+
+      const output = `
+        <h3>Account Deletion Confirmation</h3>
+        <p>We are sending this email to confirm that you have successfully deleted your Backlog Library account.</p>
+        <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
+      `;
+      transporter.sendMail(
+        {
+          from: '"Backlog Library" <backloglibrary@gmail.com>',
+          to: email,
+          subject: 'Account Deletion Confirmation',
+          html: output,
+        },
+        (err, info) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('Message sent: %s', info.messageId);
+          }
+        }
+      );
+
+      res.json({message: 'Account has been successfully deleted!'});
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+);
+
+module.exports = userAuthenticationRouter;
