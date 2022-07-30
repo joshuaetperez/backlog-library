@@ -64,12 +64,13 @@ const removeEntry = (entries, entryID) => {
 // Returns a random entry taking filters into account (if any)
 // filterObj: {categoryID, statusID, priorityID}
 const getRandomEntry = (prevRandomEntry, entries, filterObj) => {
-  const {categoryID, statusID, priorityID} = filterObj;
+  const {categoryID, statusID, priorityID, searchText} = filterObj;
   let filteredEntries = entries.filter(
     (entry) =>
       (categoryID === 0 || entry.category_id === categoryID) &&
       (statusID === 0 || entry.status_id === statusID) &&
-      (priorityID === 0 || entry.priority_id === priorityID)
+      (priorityID === 0 || entry.priority_id === priorityID) &&
+      entry.title.toLowerCase().includes(searchText.toLowerCase())
   );
 
   // If possible, return a random entry that is different from the previous entry

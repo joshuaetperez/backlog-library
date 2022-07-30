@@ -20,6 +20,7 @@ function Submenu(props) {
     showModal,
   } = props.filterData;
   const {randomEntry, setRandomEntry} = props.randomEntryData;
+  const searchText = props.searchText;
   const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
 
   // Handles random entry when category or filter options are changed
@@ -40,7 +41,7 @@ function Submenu(props) {
   };
 
   const onRandomButtonClick = () => {
-    const filterObj = {categoryID, statusID, priorityID};
+    const filterObj = {categoryID, statusID, priorityID, searchText};
     const newRandomEntry = getRandomEntry(randomEntry, entries, filterObj);
     newRandomEntry !== undefined
       ? setRandomEntry(newRandomEntry)
@@ -103,7 +104,7 @@ function Submenu(props) {
         <div className="d-grid gap-2 col-6 my-3 mx-auto">
           <Button
             type="button"
-            variant="info"
+            variant="secondary"
             onClick={onResetFilterButtonClick}
           >
             Reset Filters
@@ -118,8 +119,8 @@ function Submenu(props) {
           placement="right"
           overlay={
             <Tooltip id="random-tooltip">
-              Randomizer takes current category and filters (if any) into
-              account
+              Randomizer factors in current category, filters, and the search
+              bar
             </Tooltip>
           }
         >

@@ -56,6 +56,7 @@ function UserHome() {
   }, [entries, timeToSort, sortID]);
   const [statusID, setStatusID] = useState(0);
   const [priorityID, setPriorityID] = useState(0);
+  const [searchText, setSearchText] = useState('');
 
   // Alerts
   const [alert, setAlert] = useState(null);
@@ -92,6 +93,7 @@ function UserHome() {
   };
   const randomEntryData = {
     randomEntry,
+    searchText,
     setRandomEntry,
   };
   const modalData = {
@@ -101,6 +103,10 @@ function UserHome() {
     setEntries,
     setRandomEntry,
     setTimeToSort,
+  };
+  const searchData = {
+    searchText,
+    setSearchText,
   };
 
   return (
@@ -177,10 +183,12 @@ function UserHome() {
                 sortData={sortData}
                 filterData={filterData}
                 randomEntryData={randomEntryData}
+                searchText={searchText}
               />
             )}
             <Entries
               entryData={entryData}
+              searchData={searchData}
               setEditedEntry={setEditedEntry}
               showModal={() => setModal('Edit')}
             />

@@ -6,6 +6,8 @@ import {
   typeArray,
 } from './entry_helpers';
 import Container from 'react-bootstrap/Container';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
@@ -70,11 +72,15 @@ function EntryGrid(props) {
         priorityID === 0 || entry.priority_id === priorityID;
       const categoryCondition =
         categoryID === 0 || entry.category_id === categoryID;
+      const searchCondition = entry.title
+        .toLowerCase()
+        .includes(props.searchText.toLowerCase());
 
       return (
         statusCondition &&
         priorityCondition &&
-        categoryCondition && (
+        categoryCondition &&
+        searchCondition && (
           <EntryRow
             key={entry.entry_id}
             entry={entry}
@@ -88,8 +94,8 @@ function EntryGrid(props) {
 
   return (
     (statusID === 0 || statusID === gridID) && (
-      <Container className="px-0 py-3">
-        <h4 className="text-secondary">{statusArray[gridID - 1]}</h4>
+      <Container className="px-0 pb-5">
+        <h4 className="text-secondary mb-3">{statusArray[gridID - 1]}</h4>
         <Container className="bg-white fs-5 border-bottom">
           <Row className="px-3 py-2 fw-bold">
             <Col xs={12} md={8}>
@@ -107,18 +113,43 @@ function EntryGrid(props) {
   );
 }
 
-function Entries(props) {
+function SearchBar(props) {
   return (
-    <Container className="p-0">
+    <Form>
+      <Form.Label htmlFor="search-bar" visuallyHidden>
+        Search bar
+      </Form.Label>
+      <InputGroup className="mb-4">
+        <InputGroup.Text className="material-icons">search</InputGroup.Text>
+        <Form.Control
+          id="search-bar"
+          placeholder="Search by title..."
+          value={props.searchData.searchText}
+          onChange={(e) => {
+            props.searchData.setSearchText(e.target.value);
+          }}
+        />
+      </InputGroup>
+    </Form>
+  );
+}
+
+function Entries(props) {
+  const {searchText, setSearchText} = props.searchData;
+  return (
+    <Container className="p-0 mt-5">
+      <SearchBar searchData={{searchText, setSearchText}} />
       <EntryGrid
         entryData={{...props.entryData, gridID: 1}}
         setEditedEntry={props.setEditedEntry}
         showModal={props.showModal}
+        searchText={searchText}
       />
       <EntryGrid
         entryData={{...props.entryData, gridID: 2}}
         setEditedEntry={props.setEditedEntry}
         showModal={props.showModal}
+        searchText={searchText}
       />
     </Container>
   );
