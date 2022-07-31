@@ -4,9 +4,13 @@ import Alert from 'react-bootstrap/Alert';
 import Container from 'react-bootstrap/Container';
 
 function ChangeEmailStatus() {
-  // "/change-email-status/" is 21 characters long
+  useEffect(() => {
+    document.title = 'Change Email - Backlog Library';
+  }, []);
+
+  // "/change-email/" is 14 characters long
   // eslint-disable-next-line no-unused-vars
-  const [token, setToken] = useState(useLocation().pathname.substring(21));
+  const [token, setToken] = useState(useLocation().pathname.substring(14));
   const [changeSuccess, setChangeSuccess] = useState(null);
 
   useEffect(() => {

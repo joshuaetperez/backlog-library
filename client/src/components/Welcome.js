@@ -1,3 +1,4 @@
+import {useEffect} from 'react';
 import {Link} from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
@@ -6,6 +7,10 @@ import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 
 function Welcome() {
+  useEffect(() => {
+    document.title = 'Backlog Library';
+  }, []);
+
   return (
     <Container
       className="bg-light d-flex flex-grow-1 justify-content-center py-3"

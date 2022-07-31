@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
@@ -8,6 +8,10 @@ const emailErrorMessage =
   'Email address is either already verified or is not registered to an account';
 
 function Reverify() {
+  useEffect(() => {
+    document.title = 'Email Reverification - Backlog Library';
+  }, []);
+
   const [email, setEmail] = useState('');
   const [reverificationSuccess, setReverificationSuccess] = useState(null);
   const [emailError, setEmailError] = useState(null);

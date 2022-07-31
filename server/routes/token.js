@@ -24,7 +24,7 @@ tokenRouter.get('/forgot-password/:token', (req, res) => {
 
 // Redirects user to a page which change user email if token is still valid
 tokenRouter.get('/change-email-verification/:token', (req, res) => {
-  res.redirect(`http://localhost:3000/change-email-status/${req.params.token}`);
+  res.redirect(`http://localhost:3000/change-email/${req.params.token}`);
 });
 
 // Checks if the given token is still valid

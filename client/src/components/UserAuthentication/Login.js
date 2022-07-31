@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -6,6 +6,10 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
 function Login() {
+  useEffect(() => {
+    document.title = 'Login - Backlog Library';
+  }, []);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loginFailed, setLoginFailed] = useState(null);

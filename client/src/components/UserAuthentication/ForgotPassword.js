@@ -1,4 +1,4 @@
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +9,10 @@ const emailErrorMessage =
   'Email address is either not verified or is not registered to an account';
 
 function ForgotPassword() {
+  useEffect(() => {
+    document.title = 'Reset Password - Backlog Library';
+  }, []);
+
   const [email, setEmail] = useState('');
   const [requestSuccess, setRequestSuccess] = useState(null);
   const [emailError, setEmailError] = useState(null);

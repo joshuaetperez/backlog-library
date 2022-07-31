@@ -12,6 +12,10 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
 function UserHome() {
+  useEffect(() => {
+    document.title = 'Entries - Backlog Library';
+  }, []);
+
   // Loading state (need to fetch user entries first)
   const [loading, setLoading] = useState(true);
 

@@ -56,10 +56,7 @@ const RouteSwitch = () => {
                 element={<Navigate to="/" />}
               />
               <Route path="settings" element={<Settings />} />
-              <Route
-                path="change-email-status/:token"
-                element={<Navigate to="/" />}
-              />
+              <Route path="change-email/:token" element={<Navigate to="/" />} />
             </>
           ) : (
             <>
@@ -77,7 +74,7 @@ const RouteSwitch = () => {
               <Route path="reset-password/:token" element={<ResetPassword />} />
               <Route path="settings" element={<Navigate to="/" />} />
               <Route
-                path="change-email-status/:token"
+                path="change-email/:token"
                 element={<ChangeEmailStatus />}
               />
             </>

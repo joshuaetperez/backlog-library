@@ -25,6 +25,10 @@ const errorMessages = {
 };
 
 function ResetPassword() {
+  useEffect(() => {
+    document.title = 'Reset Password - Backlog Library';
+  }, []);
+
   // "/reset-password/" is 16 characters long
   // eslint-disable-next-line no-unused-vars
   const [token, setToken] = useState(useLocation().pathname.substring(16));

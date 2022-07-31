@@ -36,6 +36,9 @@ const errorMessages = {
 };
 
 function Settings() {
+  useEffect(() => {
+    document.title = 'Settings - Backlog Library';
+  }, []);
   const user = useContext(myContext);
 
   const currentEmail = user.email;
