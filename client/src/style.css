@@ -8,6 +8,10 @@ body,
   min-height: 30rem;
 }
 
+.card-height-404 {
+  max-height: 15rem;
+}
+
 .form-error {
   display: flex;
   color: #ff0000;
