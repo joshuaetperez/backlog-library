@@ -3,6 +3,8 @@ import {Link, useLocation} from 'react-router-dom';
 import Alert from 'react-bootstrap/Alert';
 import Container from 'react-bootstrap/Container';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function ChangeEmailStatus() {
   useEffect(() => {
     document.title = 'Change Email - Backlog Library';
@@ -16,12 +18,9 @@ function ChangeEmailStatus() {
   useEffect(() => {
     async function changeEmail(e) {
       try {
-        const response = await fetch(
-          `http://localhost:5000/change-email/${token}`,
-          {
-            method: 'POST',
-          }
-        );
+        const response = await fetch(`${BASE_URL}/${token}`, {
+          method: 'POST',
+        });
         if (response.status === 200) {
           const jsonData = await response.json();
           const responseText = jsonData.message;
@@ -38,9 +37,7 @@ function ChangeEmailStatus() {
 
     async function checkToken() {
       try {
-        const response = await fetch(
-          `http://localhost:5000/check-token/${token}`
-        );
+        const response = await fetch(`${BASE_URL}/${token}`);
         if (response.status === 200) {
           const jsonData = await response.json();
           const responseText = jsonData.message;

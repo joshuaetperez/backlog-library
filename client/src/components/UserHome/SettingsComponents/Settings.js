@@ -9,6 +9,8 @@ import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function createDefaultErrorState() {
   return {
     emailInvalidError: null,
@@ -68,7 +70,7 @@ function Settings() {
   const changeEmail = async () => {
     try {
       const body = {newEmail};
-      const response = await fetch('http://localhost:5000/user/change-email/', {
+      const response = await fetch(`${BASE_URL}/user/change-email`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),
@@ -97,7 +99,7 @@ function Settings() {
           setAlert('Change Email');
           setAlertError(true);
         } else if (responseText === 'Received change email request') {
-          await fetch('http://localhost:5000/logout', {
+          await fetch(`${BASE_URL}/logout`, {
             method: 'DELETE',
             credentials: 'include',
           });
@@ -131,15 +133,12 @@ function Settings() {
   const changePassword = async () => {
     try {
       const body = {newPassword, confirmationPassword};
-      const response = await fetch(
-        'http://localhost:5000/user/change-password/',
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body),
-          credentials: 'include',
-        }
-      );
+      const response = await fetch(`${BASE_URL}/user/change-password`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
       if (response.status === 200) {
         const jsonData = await response.json();
         const responseText = jsonData.message;
@@ -154,7 +153,7 @@ function Settings() {
           setAlert('Change Password');
           setAlertError(true);
         } else if (responseText === 'Password has been changed successfully!') {
-          await fetch('http://localhost:5000/logout', {
+          await fetch(`${BASE_URL}/logout`, {
             method: 'DELETE',
             credentials: 'include',
           });
@@ -191,7 +190,7 @@ function Settings() {
   const deleteEntries = async () => {
     try {
       await fetch(
-        `http://localhost:5000/delete-entries/${user.userID}/${deleteCategoryID}`,
+        `${BASE_URL}/delete-entries/${user.userID}/${deleteCategoryID}`,
         {
           method: 'DELETE',
         }
@@ -204,7 +203,7 @@ function Settings() {
   const deleteAccount = async () => {
     try {
       console.log(user);
-      await fetch(`http://localhost:5000/delete-account/${user.userID}`, {
+      await fetch(`${BASE_URL}/delete-account/${user.userID}`, {
         method: 'DELETE',
       });
       window.location = '/';

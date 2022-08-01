@@ -1,6 +1,8 @@
 import {createContext, useEffect, useState} from 'react';
 
 export const myContext = createContext();
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 export default function Context(props) {
   const [user, setUser] = useState(undefined);
 
@@ -8,7 +10,7 @@ export default function Context(props) {
   useEffect(() => {
     const getUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/user', {
+        const response = await fetch(`${BASE_URL}/user`, {
           credentials: 'include',
         });
         const jsonData = await response.json();

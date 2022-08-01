@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function createDefaultErrorState() {
   return {
     emailInvalidError: null,
@@ -66,7 +68,7 @@ function Signup() {
     // Server-side form validation
     try {
       const body = {email, password, confirmationPassword};
-      const response = await fetch('http://localhost:5000/signup', {
+      const response = await fetch(`${BASE_URL}/signup`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function Login() {
   useEffect(() => {
     document.title = 'Login - Backlog Library';
@@ -20,7 +22,7 @@ function Login() {
 
     try {
       const body = {email, password};
-      const response = await fetch('http://localhost:5000/login', {
+      const response = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

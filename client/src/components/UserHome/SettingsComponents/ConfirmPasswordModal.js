@@ -3,6 +3,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function createDefaultErrorState() {
   return {
     passwordLengthError: null,
@@ -35,15 +37,12 @@ function ConfirmPasswordForm(props) {
     // Server-side validation
     try {
       const body = {password};
-      const response = await fetch(
-        'http://localhost:5000/user/confirm-password',
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body),
-          credentials: 'include',
-        }
-      );
+      const response = await fetch(`${BASE_URL}/user/confirm-password`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
 
       if (response.status === 200) {
         const jsonData = await response.json();

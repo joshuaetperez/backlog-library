@@ -11,6 +11,8 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function UserHome() {
   useEffect(() => {
     document.title = 'Entries - Backlog Library';
@@ -24,7 +26,7 @@ function UserHome() {
   useEffect(() => {
     async function getEntries() {
       try {
-        const response = await fetch(`http://localhost:5000/user/get-entries`, {
+        const response = await fetch(`${BASE_URL}/user/get-entries`, {
           credentials: 'include',
         });
         const entries = await response.json();

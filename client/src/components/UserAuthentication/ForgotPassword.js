@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 const emailErrorMessage =
   'Email address is either not verified or is not registered to an account';
 
@@ -27,7 +29,7 @@ function ForgotPassword() {
     // Server-side form validation
     try {
       const body = {email};
-      const response = await fetch('http://localhost:5000/forgot-password', {
+      const response = await fetch(`${BASE_URL}/forgot-password`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

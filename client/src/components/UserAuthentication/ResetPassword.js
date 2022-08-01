@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function createDefaultErrorState() {
   return {
     newPasswordLengthError: null,
@@ -41,9 +43,7 @@ function ResetPassword() {
   useEffect(() => {
     async function checkToken() {
       try {
-        const response = await fetch(
-          `http://localhost:5000/check-token/${token}`
-        );
+        const response = await fetch(`${BASE_URL}/check-token/${token}`);
         if (response.status === 200) {
           const jsonData = await response.json();
           const responseText = jsonData.message;
@@ -96,14 +96,11 @@ function ResetPassword() {
     // Server-side form validation
     try {
       const body = {newPassword, confirmationPassword};
-      const response = await fetch(
-        `http://localhost:5000/reset-password/${token}`,
-        {
-          method: 'POST',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/reset-password/${token}`, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+      });
       if (response.status === 200) {
         const jsonData = await response.json();
         const responseText = jsonData.message;

@@ -9,6 +9,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function EditEntryForm(props) {
   const editedEntry = props.modalData.editedEntry;
   const entryID = editedEntry.entry_id;
@@ -32,15 +34,12 @@ function EditEntryForm(props) {
         title: title.trim(),
         notes,
       };
-      const response = await fetch(
-        `http://localhost:5000/edit-entry/${entryID}`,
-        {
-          method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
-          body: JSON.stringify(body),
-          credentials: 'include',
-        }
-      );
+      const response = await fetch(`${BASE_URL}/edit-entry/${entryID}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(body),
+        credentials: 'include',
+      });
       const jsonData = await response.json();
       const errorArray = jsonData.errors;
 

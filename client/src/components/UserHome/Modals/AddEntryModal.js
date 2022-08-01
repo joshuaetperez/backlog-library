@@ -10,6 +10,8 @@ import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function AddEntryForm(props) {
   const entryData = props.entryData;
   const [title, setTitle] = useState('');
@@ -34,7 +36,7 @@ function AddEntryForm(props) {
         title: title.trim(),
         notes,
       };
-      const response = await fetch('http://localhost:5000/user/add-entry', {
+      const response = await fetch(`${BASE_URL}/user/add-entry`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(body),

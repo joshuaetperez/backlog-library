@@ -9,10 +9,12 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Stack from 'react-bootstrap/Stack';
 
+const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+
 function Header() {
   const onLogOut = async () => {
     try {
-      await fetch('http://localhost:5000/logout', {
+      await fetch(`${BASE_URL}/logout`, {
         method: 'DELETE',
         credentials: 'include',
       });

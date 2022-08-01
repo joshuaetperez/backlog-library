@@ -1,6 +1,8 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const PORT = process.env.PORT || 8080;
+const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
 const express = require('express');
 const app = express();
@@ -17,7 +19,7 @@ const tokenRouter = require('./routes/token');
 
 initializePassport(passport);
 
-app.use(cors({origin: 'http://localhost:3000', credentials: true}));
+app.use(cors({origin: CLIENT_URL, credentials: true}));
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
 app.use(
@@ -36,7 +38,6 @@ app.use(entryRouter);
 app.use(userRouter);
 app.use(tokenRouter);
 
-const port = 5000;
-app.listen(port, () => {
-  console.log(`Server is listening at port ${port}`);
+app.listen(PORT, () => {
+  console.log(`Server is listening at port ${PORT}`);
 });
