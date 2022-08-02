@@ -9,7 +9,7 @@ const forgotPasswordSchema = require('../schema/forgot-password-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
 const deleteAccountSchema = require('../schema/delete-account-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
-const CLIENT_URL = require('../http');
+const {CLIENT_URL, SERVER_URL} = require('../http');
 const TOKEN_TIME_LIMIT = process.env.TOKEN_TIME_LIMIT;
 
 const userAuthenticationRouter = express.Router();
@@ -25,14 +25,14 @@ userAuthenticationRouter.post(
       const hashedPassword = await bcrpyt.hash(password, 10);
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const result = await pool.query(
+      await pool.query(
         'INSERT INTO users (email, password, token, token_timestamptz) VALUES($1, $2, $3, $4) RETURNING *',
         [email, hashedPassword, token, now]
       );
 
       const output = `
         <h3>New Account Verification</h3>
-        <a href="${CLIENT_URL}/verification/${token}">Please click here to verify your email account</a>
+        <a href="${SERVER_URL}/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
@@ -68,14 +68,14 @@ userAuthenticationRouter.post(
       const {email} = req.body;
       const token = crypto.randomBytes(64).toString('hex');
       const now = new Date();
-      const result = await pool.query(
+      await pool.query(
         'UPDATE users SET (token, token_timestamptz) = ($1, $2) WHERE email = $3 RETURNING *',
         [token, now, email]
       );
 
       const output = `
         <h3>Resent Email Verification</h3>
-        <a href="${CLIENT_URL}/verification/${token}">Please click here to verify your email account</a>
+        <a href="${SERVER_URL}/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;

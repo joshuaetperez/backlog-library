@@ -1,6 +1,6 @@
 const express = require('express');
 const pool = require('../db');
-const CLIENT_URL = require('../http');
+const {CLIENT_URL} = require('../http');
 
 const tokenRouter = express.Router();
 
