@@ -6,6 +6,6 @@ const CLIENT_URL =
 const SERVER_URL =
   process.env.NODE_ENV === 'production'
     ? process.env.SERVER_URL
-    : 'http://localhost:5000';
+    : 'http://localhost:5000/api';
 
 module.exports = {CLIENT_URL, SERVER_URL};

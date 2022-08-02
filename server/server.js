@@ -10,12 +10,7 @@ const cors = require('cors');
 const passport = require('passport');
 const initializePassport = require('./passport-config');
 const session = require('express-session');
-
-const loginRouter = require('./routes/login');
-const userAuthenticationRouter = require('./routes/user-authentication');
-const entryRouter = require('./routes/entry');
-const userRouter = require('./routes/user');
-const tokenRouter = require('./routes/token');
+const router = require('./routes');
 
 initializePassport(passport);
 
@@ -31,12 +26,7 @@ app.use(
 );
 app.use(passport.initialize());
 app.use(passport.session());
-
-app.use(loginRouter);
-app.use(userAuthenticationRouter);
-app.use(entryRouter);
-app.use(userRouter);
-app.use(tokenRouter);
+app.use('/api', router);
 
 app.listen(PORT, () => {
   console.log(`Server is listening at port ${PORT}`);
