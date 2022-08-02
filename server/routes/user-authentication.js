@@ -9,6 +9,7 @@ const forgotPasswordSchema = require('../schema/forgot-password-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
 const deleteAccountSchema = require('../schema/delete-account-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
+const CLIENT_URL = require('../http');
 const TOKEN_TIME_LIMIT = process.env.TOKEN_TIME_LIMIT;
 
 const userAuthenticationRouter = express.Router();
@@ -31,7 +32,7 @@ userAuthenticationRouter.post(
 
       const output = `
         <h3>New Account Verification</h3>
-        <a href="http://localhost:5000/verification/${token}">Please click here to verify your email account</a>
+        <a href="${CLIENT_URL}/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
@@ -74,7 +75,7 @@ userAuthenticationRouter.post(
 
       const output = `
         <h3>Resent Email Verification</h3>
-        <a href="http://localhost:5000/verification/${token}">Please click here to verify your email account</a>
+        <a href="${CLIENT_URL}/verification/${token}">Please click here to verify your email account</a>
         <p>Ignore this email if you did not create a Backlog Library account.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
@@ -115,7 +116,7 @@ userAuthenticationRouter.post(
         [token, now, email]
       );
 
-      const resetLink = `<a href="http://localhost:5000/forgot-password/${token}" style='display: inline-block; background-color: #489be8; color: #FFFFFF; padding: 10px 20px; border: none; border-radius: 3px; text-decoration: none;'>Reset Password</a>`;
+      const resetLink = `<a href="${CLIENT_URL}/forgot-password/${token}" style='display: inline-block; background-color: #489be8; color: #FFFFFF; padding: 10px 20px; border: none; border-radius: 3px; text-decoration: none;'>Reset Password</a>`;
       const output = `
         <h3>Password Reset Request</h3>
         <p>We received your request for a password reset on this account. Click on the bottom below to reset your password.</p>

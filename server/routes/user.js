@@ -9,6 +9,7 @@ const confirmPasswordSchema = require('../schema/confirm-password-schema');
 const changeEmailSchema = require('../schema/change-email-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
+const CLIENT_URL = require('../http');
 
 const userRouter = express.Router();
 
@@ -118,7 +119,7 @@ userRouter.post(
     );
     const newEmailOutput = `
         <h3>Email Change Verification</h3>
-        <a href="http://localhost:5000/change-email-verification/${token}">Please click here to verify that you want to change the email address associated with your Backlog Library account to this email address.</a>
+        <a href="${CLIENT_URL}/change-email-verification/${token}">Please click here to verify that you want to change the email address associated with your Backlog Library account to this email address.</a>
         <p><b>This link will expire in 24 hours.</b> Ignore this email if you did not request for an email change.</p>
         <p>If you have any questions or need help, please contact me at joshuaetperez@gmail.com.</p>
       `;
