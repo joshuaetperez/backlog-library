@@ -21,6 +21,7 @@ function Login() {
 
     try {
       const body = {email, password};
+      console.log(BASE_URL);
       const response = await fetch(`${BASE_URL}/login`, {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
