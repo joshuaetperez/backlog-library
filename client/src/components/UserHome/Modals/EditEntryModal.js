@@ -1,4 +1,5 @@
 import {useState} from 'react';
+import BASE_URL from '../../../http';
 import {removeEntry} from '../Entries/entry_helpers';
 import {
   createDefaultErrorState,
@@ -8,8 +9,6 @@ import {
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function EditEntryForm(props) {
   const editedEntry = props.modalData.editedEntry;

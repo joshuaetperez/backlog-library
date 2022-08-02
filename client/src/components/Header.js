@@ -1,6 +1,7 @@
 import {useContext} from 'react';
 import {Link} from 'react-router-dom';
 import {myContext} from './Context';
+import BASE_URL from '../http';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -8,8 +9,6 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import Stack from 'react-bootstrap/Stack';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function Header() {
   const onLogOut = async () => {

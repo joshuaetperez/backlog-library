@@ -2,8 +2,7 @@ import {useState} from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
+import BASE_URL from '../../../http';
 
 function createDefaultErrorState() {
   return {

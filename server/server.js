@@ -1,8 +1,11 @@
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
+const CLIENT_URL =
+  process.env.NODE_ENV !== 'production'
+    ? 'http://localhost:3000'
+    : process.env.CLIENT_URL;
 const PORT = process.env.PORT || 5000;
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
 
 const express = require('express');
 const app = express();

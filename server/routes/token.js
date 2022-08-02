@@ -2,7 +2,10 @@ const express = require('express');
 const pool = require('../db');
 
 const tokenRouter = express.Router();
-const CLIENT_URL = process.env.CLIENT_URL || 'http://localhost:3000';
+const CLIENT_URL =
+  process.env.NODE_ENV !== 'production'
+    ? 'http://localhost:3000'
+    : process.env.CLIENT_URL;
 const TOKEN_TIME_LIMIT = process.env.TOKEN_TIME_LIMIT;
 
 // Verifies the user's account if the verification token is still valid

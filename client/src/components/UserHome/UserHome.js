@@ -1,5 +1,6 @@
 import {useEffect, useState} from 'react';
 import {Outlet} from 'react-router-dom';
+import BASE_URL from '../../http';
 import CategoryListGroup from './Category/CategoryListGroup';
 import AddEntryModal from './Modals/AddEntryModal';
 import EditEntryModal from './Modals/EditEntryModal';
@@ -10,8 +11,6 @@ import Entries from './Entries/Entries';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function UserHome() {
   useEffect(() => {

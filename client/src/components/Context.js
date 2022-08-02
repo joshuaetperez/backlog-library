@@ -1,7 +1,7 @@
 import {createContext, useEffect, useState} from 'react';
+import BASE_URL from '../http';
 
 export const myContext = createContext();
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 export default function Context(props) {
   const [user, setUser] = useState(undefined);

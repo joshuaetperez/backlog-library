@@ -1,11 +1,10 @@
 import {useEffect, useState} from 'react';
 import {Link} from 'react-router-dom';
+import BASE_URL from '../../http';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 const emailErrorMessage =
   'Email address is either not verified or is not registered to an account';

@@ -1,4 +1,5 @@
 import {useContext, useEffect, useState} from 'react';
+import BASE_URL from '../../../http';
 import {myContext} from '../../Context';
 import {typeArray} from '../Entries/entry_helpers';
 import ConfirmPasswordModal from './ConfirmPasswordModal';
@@ -8,8 +9,6 @@ import Container from 'react-bootstrap/Container';
 import Form from 'react-bootstrap/Form';
 import Col from 'react-bootstrap/Col';
 import Row from 'react-bootstrap/Row';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function createDefaultErrorState() {
   return {

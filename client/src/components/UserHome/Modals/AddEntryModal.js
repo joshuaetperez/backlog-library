@@ -1,5 +1,6 @@
 import {useState} from 'react';
 import {useLocation} from 'react-router-dom';
+import BASE_URL from '../../../http';
 import {categoryArray} from '../Entries/entry_helpers';
 import {
   createDefaultErrorState,
@@ -9,8 +10,6 @@ import {
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
 import Modal from 'react-bootstrap/Modal';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function AddEntryForm(props) {
   const entryData = props.entryData;

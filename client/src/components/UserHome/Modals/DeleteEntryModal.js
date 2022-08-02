@@ -1,9 +1,8 @@
 import {useState} from 'react';
+import BASE_URL from '../../../http';
 import {removeEntry} from '../Entries/entry_helpers';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function DeleteEntryModal(props) {
   const [errorExists, setErrorExists] = useState(false);

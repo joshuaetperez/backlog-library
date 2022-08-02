@@ -1,9 +1,8 @@
 import {useEffect, useState} from 'react';
 import {Link, useLocation} from 'react-router-dom';
+import BASE_URL from '../../http';
 import Alert from 'react-bootstrap/Alert';
 import Container from 'react-bootstrap/Container';
-
-const BASE_URL = process.env.BASE_URL || 'http://localhost:5000';
 
 function ChangeEmailStatus() {
   useEffect(() => {
