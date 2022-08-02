@@ -9,7 +9,7 @@ const forgotPasswordSchema = require('../schema/forgot-password-schema');
 const resetPasswordSchema = require('../schema/reset-password-schema');
 const deleteAccountSchema = require('../schema/delete-account-schema');
 const validateRequestSchema = require('../middlewares/validate-request-schema');
-const tokenTimeLimit = process.env.TOKEN_TIME_LIMIT;
+const TOKEN_TIME_LIMIT = process.env.TOKEN_TIME_LIMIT;
 
 const userAuthenticationRouter = express.Router();
 
@@ -172,7 +172,7 @@ userAuthenticationRouter.post(
       const timeNow = new Date().getTime();
       // If the link has expired, the token should no longer work
       if (
-        tokenTimeLimit <
+        TOKEN_TIME_LIMIT <
         timeNow - tokenResult.rows[0].token_timestamptz.getTime()
       ) {
         return res.json({message: 'Reset Password failed: Expired token'});

@@ -82,7 +82,7 @@ const getRandomEntry = (prevRandomEntry, entries, filterObj) => {
   return randomEntry;
 };
 
-module.exports = {
+export {
   categoryArray,
   statusArray,
   priorityArray,

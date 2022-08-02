@@ -47,8 +47,4 @@ const errorMessages = {
   notesLengthErrorMessage: 'Notes cannot be more than 1000 characters',
 };
 
-module.exports = {
-  createDefaultErrorState,
-  createErrorState,
-  errorMessages,
-};
+export {createDefaultErrorState, createErrorState, errorMessages};
