@@ -82,6 +82,18 @@ const getRandomEntry = (prevRandomEntry, entries, filterObj) => {
   return randomEntry;
 };
 
+const getEntryAmount = (entries, filterObj) => {
+  const {categoryID, gridID, priorityID, searchText} = filterObj;
+  let filteredEntries = entries.filter(
+    (entry) =>
+      (categoryID === 0 || entry.category_id === categoryID) &&
+      entry.status_id === gridID &&
+      (priorityID === 0 || entry.priority_id === priorityID) &&
+      entry.title.toLowerCase().includes(searchText.toLowerCase())
+  );
+  return filteredEntries.length;
+};
+
 export {
   categoryArray,
   statusArray,
@@ -90,4 +102,5 @@ export {
   sortEntries,
   removeEntry,
   getRandomEntry,
+  getEntryAmount,
 };

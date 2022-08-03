@@ -1,6 +1,7 @@
 import {useLocation} from 'react-router-dom';
 import {
   categoryArray,
+  getEntryAmount,
   priorityArray,
   statusArray,
   typeArray,
@@ -62,7 +63,9 @@ function RandomEntryRow(props) {
 
 function EntryGrid(props) {
   const {statusID, gridID, priorityID, entries} = props.entryData;
+  const searchText = props.searchText;
   const categoryID = categoryArray.indexOf(useLocation().pathname.substring(1));
+  const filterObj = {categoryID, gridID, priorityID, searchText};
 
   const showEntries = () => {
     return entries.map((entry) => {
@@ -74,13 +77,15 @@ function EntryGrid(props) {
         categoryID === 0 || entry.category_id === categoryID;
       const searchCondition = entry.title
         .toLowerCase()
-        .includes(props.searchText.toLowerCase());
-
-      return (
+        .includes(searchText.toLowerCase());
+      const allConditions =
         statusCondition &&
         priorityCondition &&
         categoryCondition &&
-        searchCondition && (
+        searchCondition;
+
+      return (
+        allConditions && (
           <EntryRow
             key={entry.entry_id}
             entry={entry}
@@ -95,7 +100,9 @@ function EntryGrid(props) {
   return (
     (statusID === 0 || statusID === gridID) && (
       <Container className="px-0 pb-5">
-        <h4 className="text-secondary mb-3">{statusArray[gridID - 1]}</h4>
+        <h4 className="text-secondary mb-3">
+          {statusArray[gridID - 1]} ({getEntryAmount(entries, filterObj)})
+        </h4>
         <Container className="bg-white fs-5 border-bottom">
           <Row className="px-3 py-2 fw-bold">
             <Col xs={12} md={8}>
