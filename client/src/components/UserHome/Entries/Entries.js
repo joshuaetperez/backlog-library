@@ -11,6 +11,8 @@ import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 
 function EntryRow(props) {
   const entry = props.entry;
@@ -20,12 +22,27 @@ function EntryRow(props) {
     props.showModal();
   };
 
+  const renderTooltip = (props) => (
+    <Tooltip id="comment-tooltip" {...props}>
+      {entry.notes}
+    </Tooltip>
+  );
+
   return (
     <Row className="entry-div px-3 py-2 border border-bottom-0">
-      <Col xs={12} md={8} className="text-truncate title-bold">
+      <Col xs={10} md={6} className="text-truncate title-bold">
         <span className="entry-title" onClick={() => onTitleClick(entry)}>
           {entry.title}
         </span>
+      </Col>
+      <Col xs={2} md={2} className="d-flex">
+        {entry.notes !== '' && (
+          <OverlayTrigger placement="right" overlay={renderTooltip(entry)}>
+            <span className="entry-comment d-flex align-self-center">
+              <span className="material-icons">chat</span>
+            </span>
+          </OverlayTrigger>
+        )}
       </Col>
       <Col xs={6} md={2}>
         {priorityArray[entry.priority_id - 1]}
