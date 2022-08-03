@@ -25,7 +25,7 @@ app.use(
     saveUninitialized: false,
   })
 );
-app.use(express.static(path.join(__dirname, '..', 'client/build')));
+app.use(express.static(path.join(__dirname, 'client/build')));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/api', router);
