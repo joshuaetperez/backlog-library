@@ -201,7 +201,6 @@ function Settings() {
   };
   const deleteAccount = async () => {
     try {
-      console.log(user);
       await fetch(`${BASE_URL}/delete-account/${user.userID}`, {
         method: 'DELETE',
       });

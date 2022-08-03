@@ -36,6 +36,7 @@ function initialize(passport) {
   });
   passport.deserializeUser(async (user_id, done) => {
     const user = await getUserByID(user_id);
+    if (user === null) return done(null, false);
     const userObj = {userID: user_id, email: user.email};
     done(null, userObj);
   });
